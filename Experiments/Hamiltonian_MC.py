@@ -13,7 +13,6 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
     :param burn: Burn-in parameter
     :param thin: Thinning parameter
     :return: Samples of our posterior distribution using HMC. Shape: (D, (num_samples-burn)/thin)
-
     Note: We imposed here the choice of mass m = 1 and a quadratic Kinetic Energy providing a Normal Gibbs Sampler
     """
 

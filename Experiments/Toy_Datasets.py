@@ -36,5 +36,8 @@ def two_clusters_gaussian(params, n_samples, test_points=None):
 
 
 if __name__ == '__main__':
-    pass
+    params_1 = {'mean': [1, 1], 'covariance_matrix': 0.5*np.eye(2)}
+    params_2 = {'mean': [-1, -1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params = [params_1, params_2]
+    X, y = two_clusters_gaussian(params, 100)
 

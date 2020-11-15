@@ -3,7 +3,13 @@ from Toy_Datasets import two_clusters_gaussian
 import autograd.numpy as np
 from autograd import grad
 from autograd.misc.optimizers import adam
+from Bayesian_pdf import get_log_prior, get_log_likelihood
 from Hamiltonian_MC import hmc
+
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
 
 class NLM:
     """
@@ -11,12 +17,33 @@ class NLM:
     """
 
     def __init__(self, architecture, random=None, weights=None):
+        """
+        :param architecture: architecture is a dictionary which should contain the following keys:
+        - width: the number of nodes inside every hidden layer (constant across the various hidden layers)
+        - hidden_layers: the number of hidden layers
+        - input_dim: the number of features of every training point
+        - output_dim: the dimensionality of the output vector (=number of classes for a classification task)
+        - activation_fn_type, activation_fn_params: related to the activation functions (not the output function)
+        - prior: the type of prior distribution over the NN parameters. Currently supported : {beta, normal,
+        None (no prior: MLE fit)}
+        - prior_parameters: the parameters of the prior distribution. Should be a dictionary
+        - likelihood: the type of likelihood distribution for the likelihood of the model. Currently supported:
+        {Gaussian posterior, Logistic posterior, Categorical, None (for MLE fit)}
+        - likelihood_parameters: the parameters of the likelihood distribution. Should be a dictionary
+        """
+
+        # check during the construction that the shapes are coherent, especially the shapes of the feature map and the
+        # prior on the weights
         self.params = {'H': architecture['width'],
                        'L': architecture['hidden_layers'],
                        'D_in': architecture['input_dim'],
                        'D_out': architecture['output_dim'],
                        'activation_type': architecture['activation_fn_type'],
-                       'activation_params': architecture['activation_fn_params']}
+                       'activation_params': architecture['activation_fn_params'],
+                       'prior_distribution': architecture.get('prior', None),
+                       'prior_parameters': architecture.get('prior_parameters', None),
+                       'likelihood_distribution': architecture.get('likelihood', None),
+                       'likelihood_parameters': architecture.get('likelihood_parameters', None)}
 
         self.D = ((architecture['input_dim'] * architecture['width'] + architecture['width'])
                   + (architecture['output_dim'] * architecture['width'] + architecture['output_dim'])
@@ -38,7 +65,7 @@ class NLM:
         self.objective_trace = np.empty((1, 1))
         self.weight_trace = np.empty((1, self.D))
 
-    def forward(self, weights, x):
+    def forward(self, weights, x, partial=False):
         ''' Forward pass given weights and input '''
         H = self.params['H']
         D_in = self.params['D_in']
@@ -73,8 +100,8 @@ class NLM:
 
             assert input.shape[1] == H
 
-        def sigmoid(z):
-            return 1/(1+np.exp(-z))
+        if partial:  # post-training, we need the NLM to make partial forward passes.
+            return input
 
         # output layer
         W = weights[index:index + H * D_out].T.reshape((-1, D_out, H))
@@ -83,6 +110,7 @@ class NLM:
         assert output.shape[1] == self.params['D_out']
 
         return output
+
 
     def make_objective(self, x_train, y_train, reg_param):
 
@@ -99,7 +127,7 @@ class NLM:
 
         return objective, grad(objective)
 
-    def fit(self, x_train, y_train, params, reg_param=None):
+    def fit_MLE(self, x_train, y_train, params, reg_param=None):
 
         assert x_train.shape[0] == self.params['D_in']
         assert y_train.shape[0] == self.params['D_out']
@@ -160,3 +188,47 @@ class NLM:
 
         self.objective_trace = self.objective_trace[1:]
         self.weight_trace = self.weight_trace[1:]
+
+
+
+    def fit_NLM(self, x_train, y_train, hmc, params_hmc):
+        """
+        :param self: a Neural Network that has been fitted via MLE. Also, the params of the NN should contain a key
+        'prior' and a key 'likelihood'
+        :param x_train: training features
+        :param y_train: training labels
+        :param hmc: HMC sampler.
+        :param params_hmc: hyperparameters for HMC. Should be a dictionary with the following keys:
+        - num_samples: total number of samples produced by the posterior
+        - step_size:  The step-size in the Leap Frog estimator
+        - L: The number of steps in the Leap Frog Estimator
+        - init: The initial position of the HMC
+        - burn: Burn-in parameter
+        :return: Samples from the posterior distribution.
+        """
+        D = self.params['H']  # dimensionality of the feature map
+        log_prior = get_log_prior(self.params['prior_distribution'], self.params['prior_parameters'], D)
+        log_likelihood = get_log_likelihood(self.params['likelihood_distribution'], self.params['likelihood_parameters'], self, x_train, y_train, D)
+        samples = hmc(log_prior, log_likelihood, **params_hmc)
+        return samples
+
+    def sample(self, x_train, y_train, hmc, params, params_hmc):
+        self.fit_MLE(x_train, y_train, params)
+        samples = self.fit_NLM(x_train, y_train, hmc, params_hmc)
+        return samples
+
+
+class Classifier:
+    """
+    This class implements the scikit-learn API for our Neural Network.
+    """
+    def __init__(self, weights, forward):
+        self.weights = weights
+        self.forward = forward
+
+    def predict(self, x):
+        p = self.forward(self.weights, x.T)
+        return (p > 0.5).astype(np.int_)
+
+    def predict_proba(self, x):
+        return self.forward(self.weights, x.T)
