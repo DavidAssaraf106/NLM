@@ -1,0 +1,253 @@
+\documentclass{article}
+
+% adjusting margin
+% \usepackage[a4paper, margin=1in]{geometry}
+
+% for the appendices
+\usepackage[toc, page]{appendix}
+
+
+
+
+% adjusting indentation and paragraph spacing
+\setlength\parindent{0pt}
+\setlength{\parskip}{0.4em}
+
+% formatting for abstract
+\newenvironment{vplace}[1][1]
+  {\par\vspace*{\stretch{#1}}}
+  {\vspace*{\stretch{1}}\par}
+\renewcommand{\abstractname}{{\scshape \Large \textmd{Abstract}}\\}
+
+% using natbib for references
+\usepackage[numbers]{natbib}
+\usepackage{url}
+
+\usepackage{yfonts}
+
+\usepackage{nccmath}
+\newenvironment{mpmatrix}{\begin{medsize}\begin{pmatrix}}%
+    {\end{pmatrix}\end{medsize}}%
+    
+\newcommand\myrule[1]{\multicolumn{1}{| l}{#1}}
+\newcommand\myrules[1]{\multicolumn{2}{| l}{#1}{| l}{#1}}
+
+
+\usepackage{blkarray}
+\usepackage{stackengine}
+\usepackage{bbding}
+\usepackage{calc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[export]{adjustbox}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage{relsize}
+\usepackage{multirow}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{bm}
+\usepackage{sidecap}
+\usepackage{ upgreek }
+\usepackage{xcolor} %% note colors
+\usepackage{graphicx}
+\usepackage{multicol}
+%\usepackage{pgfbaselayers}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{stmaryrd}
+\usepackage{palatino}
+\usepackage[utf8]{inputenc}
+\usepackage[breaklinks]{hyperref}
+\usepackage{aurical}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\newcommand\SmallMatrix[1]{{%
+\tiny\arraycolsep=0.3\arraycolsep\ensuremath{\begin{pmatrix}#1\end{pmatrix}}}}
+\renewcommand{\Pr}{\mbox{P}}
+\newcommand{\e}{\mbox{e}}
+\newcommand{\dx}{\,\mbox{d}x}
+
+%%%%% COMMANDS
+%\newcommand{\x}{\mathbf{x}}
+%\newcommand{\R}{\mathbb{R}}
+%\newcommand{\p}{\mathbf{p}}
+%\newcommand{\vp}{\mathbf{v}_\mathbf{p}}
+%\newcommand{\q}{\mathbf{q}}
+
+% formatting and numbering theorems etc.
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{axiom}[lemma]{Axiom}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{corollary}[lemma]{Corollary}
+\newtheorem{conjecture}[lemma]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[lemma]{Definition}
+
+
+\theoremstyle{definition}
+\newtheorem{examp}[lemma]{Example}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+%\theoremstyle{remark}
+%\newtheorem*{claim}{Claim}
+%\theoremstyle{remark}
+%\newtheorem*{proofofclaim}{Proof of claim}
+
+\setcounter{MaxMatrixCols}{20}
+
+% Peiran's custom commands
+\usepackage{enumitem}
+\newcommand{\htwonormalised}{\begin{pmatrix} + & + \\ + & - \end{pmatrix}}
+\newcommand{\GammaQuotient}{\Gamma/\langle u \rangle}
+\newcommand{\GammaRQuotient}{\Gamma_{\mbox{\small \textnormal{right}}}/\langle -I \rangle}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\Image}{Im}
+\DeclareMathOperator{\LT}{LT}
+\DeclareMathOperator{\LM}{LM}
+\DeclareMathOperator{\LC}{LC}
+\DeclareMathOperator{\lcm}{lcm}
+\DeclareMathOperator{\multideg}{multideg}
+\DeclareMathOperator{\Criterion}{Criterion}
+\DeclareMathOperator{\st}{s.t. }
+\DeclareMathOperator{\trace}{trace}
+\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\cut}{cut}
+
+%\newcommand{P}{P}
+%\newcommand{Q}{\mathbf{Q}}
+%\newcommand{H}{H}
+%\newcommand{I}{\mathbf{I}}
+\makeatletter
+\renewcommand*\env@matrix[1][c]{\hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{*\c@MaxMatrixCols #1}}
+\makeatother
+
+
+%for matlab code
+\usepackage{listings}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+
+\lstset{language=Matlab,%
+    %basicstyle=\color{red},
+    breaklines=true,%
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},%
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},%
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},%
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=left,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
+}
+
+% metadata
+
+
+
+
+\begin{document}
+\textbf{Rapha\"el Pellegrin, Gael Ancel, David Assaraf - 12/11/20\\
+\begin{center}
+BaCOUn: Bayesian Classifiers with Out-of-Distribution Uncertainty \end{center}}
+\medskip
+
+As we have seen in homeworks, some classifiers yield models that make confident predictions for OOD points. We partially resolved this issue in Homework 7 by working with non-linear classifiers. It is important to get a notion of the uncertainty associated to a prediction if the classifier is used for some real-world application (in the medical sector, for an air plane system, etc). If the uncertainty associated to the prediction is too high, it might be necessary for a human supervisor to take the decision. Let's say that we have $n$ classes of data points. The main point of the paper is to add a $n+1$th class that surrounds the data-points. 
+
+\section{Epistemic and aleatoric uncertainty}
+
+Epidemic uncertainty is uncertainty that is due to a lack of observations. It can be reduced with further observations. aleatoric uncertainty is uncertainty that is due to the intrinsic uncertainty in the data, and can't be reduced with further observations.
+
+In the case of classifiers, the epistemic uncertainty can have two causes: being far away from training points, and lying close to boundaries. Points lying far away from training points are called OOD points.
+
+\section{Previous techniques to estimate the uncertainty in classification}
+
+Gaussian Processes (GPs) have been the gold standard to estimate the uncertainty in classification. However, they become computationally intractable as the number of parameters grow. 
+
+\subsection{Neural Networks}
+
+It is possible to use Bayesian Neural Networks (BNN) by placing priors on all the weights of a neural net. It is important to note that a result of Neal (1996) shows that BNN are equivalent to GP in the infinite width limit. However, this is computationally intractable. Furthermore, BNN are not great for estimating the OOD uncertainty when their size is finite and small. Even then, it can be computationally expensive to train the model with priors on all the weights. 
+
+Thus, Neural Linear Models (NLM), where priors are put on the weights in the last hidden layers were used instead of BNN. The remaining weights are learnt. Of course, this is not great for estimating the OOD uncertainty (it is more restrictive than BNN, which are not satisfactory already).
+
+\subsection{Nitty gritty of NLMs}
+
+The data is $\mathcal{D}=\{(x_i,y_i)\}_{i=1}^{N}$. We have $N$ data points, $\{x_i\}_{i=1}^{N}$, that each belong to $\mathbb{R}^D$ and come with a label $y_i\in [n]:=\{1,\dots,n\}$. It is assumed that the labels come from a categorical distribution:
+
+\begin{equation} y|x \sim \text{Cat}(\text{softmax}(W^T\phi_\theta(x))), W \sim p(W) \end{equation}
+
+where, given $\{p_1, \dots, p_n\}$ the categorical random variable has support $[n]$ and probability mass function:
+
+\begin{equation} p(x)=\prod_{i=1}^n p_i^{[x=i]} \end{equation}
+
+and where, given $\bold{z}=(z_1,\dots, z_n)$, the softmax function is defined as:
+
+\begin{equation} \sigma (\mathbf {z} )_{j}={\frac {\mathrm {e} ^{z_{j}}}{\sum _{k=1}^{K}\mathrm {e} ^{z_{k}}}} \end{equation} 
+
+for all $ j \in \left\{1,\ldots ,n\right\}$. Thus, the softmax function is a function from $\mathbb{R}^n$ to $\mathbb{R}^n$.
+
+$\phi_\theta$ is called the feature map because it extracts information from the data in order to proceed to classification. The feature map is trained to maximize the observed data log-likelihood:
+
+\begin{equation} \theta^*=\arg \max_{\theta, W} p(y_1,\dots, Y_N|x_1,\dots,x_N,\theta,W) \end{equation}
+
+Then, the posterior for the weights $p(W|\theta^*, \mathcal{D})$ can be inferred using $\phi_{\theta*}$. The posterior is untractable so Hamiltonian Monte Carlo (HMC) or mean-field Gaussian variational inference is used.
+
+It is then possible to make new predictions using:
+
+\begin{align} p(y_{\text{new}}|x_{\text{new}},\mathcal{D},\theta^*) & =\int  p(y_{\text{new}},W|x_{\text{new}},\mathcal{D},,\theta^*) dW\\
+& =\int  p(y_{\text{new}}|x_{\text{new}},\mathcal{D},\theta^*,W)p(W|x_{\text{new}},\mathcal{D},\theta^*) dW \\
+& =\int  p(y_{\text{new}}|x_{\text{new}},\theta^*,W)p(W|\mathcal{D},\theta^*) dW   \end{align}
+
+
+\subsection{Case study}
+
+Let us consider the case $\{(x_i,y_i,b_i)\}_{i=1}^N$ where $x_i$ is a data pint, $y_i$ is its label and $b_i$ is a binary indicator indicating whether $x_i$ is OOD or not. It seems the trick is to predict $y,b$ given $x$ rather than $y$ given $x$ (because then predicting $b$ given the features learnt when predicting $y|x$ is not possible).
+
+\section{The authors solution}
+
+The authors show that BNN and NLM are not good at dealing with OOD uncertainty because the decision boundaries would need to bound the data. This is not encouraged when training BNN or NLM.
+
+BaCOUn is a framework of training (that is here applied to NLM, but could also be applied to BNN), that starts by generating an $n+1$th class of boundary points.
+
+In details, the solution proposed by the authors of BaCOUn: Bayesian Classifiers with Out-of-Distribution Uncertainty is to add another class of points that lie at the boundary of the data. Then, to classify the augmented data (the $n$ original classes and the $n+1$ boundary class, decision boundaries that properly bound the original data will have to be learnt).
+
+The authors show that the OOD uncertainty estimates are comparable to the estimates produced by GPs.
+
+
+\subsection{BaCOUn}
+
+To reiterate, the goal of BaCOUn is to use NLM that learn decision boundaries that properly bound the data. This is done by adding OOD samples at the boundary of the data (the $n+1$th class). The classifier is then trained to distinguish between the training data and OOD points. Using the features learnt by this classifier, we fit a Bayesian logistic regression model on these features. 
+
+The method proposed to generate OOD points was to use normalizing flows. In the simpler examples (data lying in an ambient space of dimensions $2$ and $3$), the OOD points were generated directly by the authors because they could visualize what the OOD points should be. Normalizing flows involve a latent space, which is easier to work with. The OOD points in the latent space correspond to boundary points of the latent space. They are then sent back  to the original space.
+
+\section{Conclusions: summary of experiments and results}
+
+The authors performed experiments (on MNIST, a wine dataset, and on synthetic data: the moons datasets, as well as the Gaussian mixture model). BaCOUn is able to capture OOD uncertainty when NLM and BNN cannot. 
+
+Furthermore, BaCOUn is able to provide a decomposition of the uncertainty into epistemic uncertainty and aleatoric uncertainty. It was checked on real data-sets to show that this decomposition is interpretable. For other techniques, this is not the case. Even the gold standard GPs (for giving correct OOD uncertainties) are not able to distinguish between epistemic and aleatoric uncertainty.
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
+
