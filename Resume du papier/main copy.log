@@ -1,10 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.16)  13 NOV 2020 18:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.16)  15 NOV 2020 18:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**"/Users/pellegrinraphael/Desktop/Harvard/AM207/Resume du papier/main copy.tex
-"
-(/Users/pellegrinraphael/Desktop/Harvard/AM207/Resume du papier/main copy.tex
+**"/Users/pellegrinraphael/Desktop/Harvard/AM207/GithubBacoun/Fall/Resume du pa
+pier/main copy.tex"
+
+(/Users/pellegrinraphael/Desktop/Harvard/AM207/GithubBacoun/Fall/Resume du papi
+er/main copy.tex
 LaTeX2e <2020-02-02> patch level 5
 L3 programming layer <2020-03-06>
 (/usr/local/texlive/2020/texmf-dist/tex/latex/base/article.cls
@@ -753,63 +755,61 @@ LaTeX Info: Redefining \nameref on input line 162.
 \openout3 = `"main copy.out"'.
 
 \c@lstlisting=\count317
-LaTeX Font Info:    Trying to load font information for U+msa on input line 167
-.
 
+Underfull \hbox (badness 10000) in paragraph at lines 165--165
+
+ []
+
+LaTeX Font Info:    Trying to load font information for U+msa on input line 168
+.
 (/usr/local/texlive/2020/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 167
+LaTeX Font Info:    Trying to load font information for U+msb on input line 168
 .
 
 (/usr/local/texlive/2020/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Trying to load font information for U+stmry on input line 1
-67.
+68.
 
 (/usr/local/texlive/2020/texmf-dist/tex/latex/stmaryrd/Ustmry.fd) [1
 
 {/usr/local/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-! Missing $ inserted.
-<inserted text> 
-                $
-l.208 
-      
-? 
-! Emergency stop.
-<inserted text> 
-                $
-l.208 
-      
-End of file on the terminal!
 
- 
-Here is how much of TeX's memory you used:
- 13669 strings out of 480608
- 199496 string characters out of 5903630
- 677760 words of memory out of 5000000
- 29256 multiletter control sequences out of 15000+600000
- 546483 words of font info for 57 fonts, out of 8000000 for 9000
- 1141 hyphenation exceptions out of 8191
- 37i,5n,72p,933b,314s stack positions out of 5000i,500n,10000p,200000b,80000s
-!  ==> Fatal error occurred, no output PDF file produced!
-ack positions out of 5000i,500n,10000p,200000b,80000s
-!  ==> Fatal error occurred, no output PDF file produced!
- ==> Fatal error occurred, no output PDF file produced!
-!
-fterFileList' on input line 252.
+Package amsfonts Warning: Obsolete command \bold; \mathbf should be used instea
+d on input line 196.
+
+
+Overfull \hbox (5.10555pt too wide) in paragraph at lines 206--207
+\T1/ppl/m/n/10 pos-te-rior is un-tractable so Hamil-to-nian Monte Carlo (HMC) o
+r mean-field Gaus-
+ []
+
+[2]
+Overfull \hbox (1.51888pt too wide) in paragraph at lines 236--236
+[]\T1/ppl/b/n/14.4 Conclusions: sum-mary of ex-per-i-ments and re-sults 
+ []
+
+[3]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 252.
+ [4]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 252.
+ (./main copy.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 252.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 252.
 Package rerunfilecheck Info: File `"main copy".out' has not changed.
 (rerunfilecheck)             Checksum: 94F2D7591FE1783276CBE166EE179F97;554.
  ) 
 Here is how much of TeX's memory you used:
  13691 strings out of 480608
- 199736 string characters out of 5903630
+ 199790 string characters out of 5903630
  679760 words of memory out of 5000000
  29261 multiletter control sequences out of 15000+600000
  548607 words of font info for 60 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 37i,11n,72p,933b,316s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,11n,72p,951b,316s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
 xlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/tex
