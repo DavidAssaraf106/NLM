@@ -212,8 +212,17 @@ class NLM:
         samples = hmc(log_prior, log_likelihood, **params_hmc)
         return samples
 
-    def sample(self, x_train, y_train, hmc, params, params_hmc):
-        self.fit_MLE(x_train, y_train, params)
+
+    def get_feature_map_weights(self):
+        """This function returns the weight of the last hidden layer. Those are the weights we will put
+        our prior on in the NLM.
+        """
+        return self.weights.flatten()[-self.params['D_out']-self.params['H']:-self.params['D_out']].reshape(1, -1)
+
+
+    def sample(self, x_train, y_train, hmc, params_fit, params_hmc):
+        self.fit_MLE(x_train, y_train, params_fit)
+        params_hmc['init'] = self.get_feature_map_weights()
         samples = self.fit_NLM(x_train, y_train, hmc, params_hmc)
         return samples
 

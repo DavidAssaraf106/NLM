@@ -1,7 +1,7 @@
 #  Here, you will find all of the priors and likelihoods we have dealt with during the AM207 course, and more
 #  The standard input format will be : (W, params, X, y) where we will impose some shape on X and y for likelihoods and
 #  (W, params) for the priors
-import numpy as np
+import autograd.numpy as np
 
 
 """
@@ -34,7 +34,7 @@ def log_logistic_likelihood(params, nlm, X, y, D):
         return 1. / (1. + np.exp(-z))
 
     def log_logistic(W):
-        mapped_X = nlm.forward(nlm.weights, X.T, partial=True)  # feature map of the inputs, dimension D
+        mapped_X = nlm.forward(nlm.weights, X, partial=True)  # feature map of the inputs, dimension D
         dot_product = np.dot(W, mapped_X)
         theta = sigmoid(dot_product)
         theta = np.clip(theta, 1e-15, 1 - 1e-15)

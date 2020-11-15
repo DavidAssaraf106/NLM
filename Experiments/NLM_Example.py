@@ -3,6 +3,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from Toy_Datasets import two_clusters_gaussian
 import autograd.numpy as np
+from Hamiltonian_MC import hmc
+
 
 def fit_MLE_0(X, y, architecture, threshold_classification, params, random, exigence):
     """
@@ -92,15 +94,51 @@ def feature_map(max_iteration):
     feature = nlm.forward(nlm.weights, X_test.T, partial=True)
     assert feature.shape[1] == nlm.params['H']
     print(nlm.weights.shape)
-    print('The feature map is from '+str(nlm.params['D_in']) + ' to ' + str(nlm.params['H']))
+    print('The feature map is from ' + str(nlm.params['D_in']) + ' to ' + str(nlm.params['H']))
     return feature
+
+
+def sample_NLM():
+    params_1 = {'mean': [1, 1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params_2 = {'mean': [-1, -1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params = [params_1, params_2]
+    X, y = two_clusters_gaussian(params, 100)
+    activation_fn_type = 'relu'
+    activation_fn = lambda x: np.maximum(np.zeros(x.shape), x)
+    width = 5
+    hidden_layers = 1
+    input_dim = 2
+    output_dim = 1
+    architecture = {'width': width,
+                    'hidden_layers': hidden_layers,
+                    'input_dim': input_dim,
+                    'output_dim': output_dim,
+                    'activation_fn_type': 'relu',
+                    'activation_fn_params': 'rate=1',
+                    'activation_fn': activation_fn,
+                    'prior': 'normal',
+                    'prior_parameters': {'mean': np.zeros(5), 'covariance_matrix': np.eye(5)},
+                    'likelihood': 'logistic',
+                    'likelihood_parameters': None}
+    rand_state = 0
+    random = np.random.RandomState(rand_state)
+    params_fit = {'step_size': 1e-3,
+                  'max_iteration': 1000,
+                  'random_restarts': 1}
+    params_hmc = {'num_samples': 2000,
+                  'step_size': 1e-2,
+                  'L': 50,
+                  'burn': 0.1,
+                  'thin': 2}
+    nlm = NLM(architecture)
+    nlm.sample(X.T, y.reshape(1, -1), hmc, params_fit, params_hmc)
 
 
 
 
 
 if __name__ == '__main__':
-    pass
+    sample_NLM()
 
 
 
