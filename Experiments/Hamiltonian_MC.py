@@ -56,19 +56,19 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
             # half-step update for momentum
             p_proposal -= step_size / 2 * grad_U(q_proposal)
 
-        p_proposal = -p_proposal  # reverse momentum to ensure detail balance/reversibility
+        p_current = -p_proposal  # reverse momentum to ensure detail balance/reversibility
 
         # accept/reject new proposed position
         H_proposal = U(q_proposal) + K(p_proposal)
         H_current = U(q_current) + K(p_current)
-
-        alpha = min(1, np.exp(H_current - H_proposal))
+        proposal=np.exp(H_current - H_proposal)
+        print(proposal)
+        alpha = min(1,proposal)
 
         if np.random.uniform() <= alpha:
             accept += 1  # you should keep track of your acceptances
             q_current = q_proposal
-
-        samples.append(q_current.flatten())
+            samples.append(q_current.flatten())
 
         i += 1
 
