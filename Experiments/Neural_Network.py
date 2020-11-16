@@ -204,6 +204,7 @@ class NLM:
         - L: The number of steps in the Leap Frog Estimator
         - init: The initial position of the HMC
         - burn: Burn-in parameter
+        - thin: Thinning factor
         :return: Samples from the posterior distribution.
         """
         D = self.params['H']  # dimensionality of the feature map
