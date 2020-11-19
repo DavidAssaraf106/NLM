@@ -1,5 +1,11 @@
 import autograd.numpy as np
 
+# To use sklearn datasets:
+from sklearn import cluster, datasets
+from sklearn.preprocessing import StandardScaler
+# further packages needed
+from itertools import cycle, islice
+
 
 def two_clusters_gaussian(params, n_samples, test_points=None):
     """
