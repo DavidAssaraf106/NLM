@@ -7,6 +7,8 @@ from sklearn.preprocessing import StandardScaler
 from itertools import cycle, islice
 
 
+
+
 def two_clusters_gaussian(params, n_samples, test_points=None):
     """
     :param params: should be a list of length K, K being the number of classes you wish to create
@@ -46,4 +48,69 @@ if __name__ == '__main__':
     params_2 = {'mean': [-1, -1], 'covariance_matrix': 0.5 * np.eye(2)}
     params = [params_1, params_2]
     X, y = two_clusters_gaussian(params, 100)
+
+
+
+def create_two_circular_classes(n=1500, noise_input=0.05, plot=False):
+    """
+    INPUT:
+    n is the target number of points in each circle (note that this is a target)
+    noise is the noise used in sklearn make_circles function
+    plot: if TRUE, will return a plot of the two classes of points (in red and yellow)
+    as well as the boundary class (in blue)
+    
+    OUPUT: boundary, class1, class2
+    the two classes of points
+    the boundary class
+    
+    """
+    # Generating the data using sklearn built-in function
+    noisy_circles_1 = datasets.make_circles(n_samples=n, factor=.0, noise=noise_input)
+    noisy_circles_2 = datasets.make_circles(n_samples=n, factor=.3, noise=noise_input)
+    noisy_circles_3 = datasets.make_circles(n_samples=n, factor=.5, noise=noise_input)
+    noisy_circles_4 = datasets.make_circles(n_samples=n, factor=.7, noise=noise_input)
+    
+    X_1=[]
+    Y_1=[]
+    for i in range(len(noisy_circles_1[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_1[0][i][0])**2+noisy_circles_1[0][i][1]**2<.7:
+            X_1.append(noisy_circles_1[0][i][0])
+            Y_1.append(noisy_circles_1[0][i][1])
+            
+    X_2=[]
+    Y_2=[]
+    for i in range(len(noisy_circles_2[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_2[0][i][0])**2+noisy_circles_2[0][i][1]**2<.7:
+            X_2.append(noisy_circles_2[0][i][0])
+            Y_2.append(noisy_circles_2[0][i][1])
+    X_3=[]
+    Y_3=[]
+    for i in range(len(noisy_circles_3[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_3[0][i][0])**2+noisy_circles_3[0][i][1]**2<.7:
+            X_3.append(noisy_circles_3[0][i][0])
+            Y_3.append(noisy_circles_3[0][i][1])
+            
+    X_4=[]
+    Y_4=[]
+    for i in range(len(noisy_circles_4[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_4[0][i][0])**2+noisy_circles_4[0][i][1]**2<.7:
+            X_4.append(noisy_circles_4[0][i][0])
+            Y_4.append(noisy_circles_4[0][i][1])
+            
+    if plot:
+        plt.plot(X,Y,'x',c='r')
+        plt.plot(X_2,Y_2,'x',c='b')
+        plt.plot(X_3,Y_3,'x',c='y')
+        plt.plot(X_4,Y_4,'x',c='b')
+        plt.show()
+        
+    boundary=[X_2+X_4,Y_2+Y_4]
+    class1=[X_1,Y_1]
+    class_2=[X_3,Y_3]
+    
+    return boundary, class1, class2
 
