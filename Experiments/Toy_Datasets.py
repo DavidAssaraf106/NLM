@@ -110,7 +110,7 @@ def create_two_circular_classes(n=1500, noise_input=0.05, plot=False):
         
     boundary=[X_2+X_4,Y_2+Y_4]
     class1=[X_1,Y_1]
-    class_2=[X_3,Y_3]
+    class2=[X_3,Y_3]
     
     return boundary, class1, class2
 
