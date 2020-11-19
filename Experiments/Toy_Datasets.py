@@ -5,6 +5,7 @@ from sklearn import cluster, datasets
 from sklearn.preprocessing import StandardScaler
 # further packages needed
 from itertools import cycle, islice
+import matplotlib
 
 
 
@@ -102,7 +103,7 @@ def create_two_circular_classes(n=1500, noise_input=0.05, plot=False):
             Y_4.append(noisy_circles_4[0][i][1])
             
     if plot:
-        plt.plot(X,Y,'x',c='r')
+        plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_2,Y_2,'x',c='b')
         plt.plot(X_3,Y_3,'x',c='y')
         plt.plot(X_4,Y_4,'x',c='b')
