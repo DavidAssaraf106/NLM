@@ -34,10 +34,10 @@ def log_logistic_likelihood(params, nlm, X, y, D):
         return 1. / (1. + np.exp(-z))
 
     def log_logistic(W):
-        mapped_X = nlm.forward(nlm.weights, X, partial=True)  # feature map of the inputs, dimension D
+        mapped_X = nlm.forward(nlm.weights, X, partial=True)  # feature map of the inputs, dimension (1,D,num_dots)
         print(mapped_X,mapped_X.shape)
         print(X)
-        dot_product = np.dot(W, mapped_X)
+        dot_product = np.dot(W, mapped_X) # !!! dimension problem: D_weights ≠ (1,D,num_dots)
         theta = sigmoid(dot_product)
         theta = np.clip(theta, 1e-15, 1 - 1e-15)
         loglkhd = y * np.log(theta) + (1 - y) * np.log(1 - theta)

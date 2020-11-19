@@ -69,7 +69,7 @@ class Feedforward:
             assert input.shape[1] == H
 
         def softmax(y):   
-            return np.exp(y - np.max(y))/(np.exp(y - np.max(y)).sum())
+            return np.exp(y)/(np.exp(y).sum())
 
         def sigmoid(y):   
             return 1/(1 + np.exp(-y))

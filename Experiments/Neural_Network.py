@@ -56,7 +56,8 @@ class NLM:
         else:
             self.random = np.random.RandomState(0)
 
-        self.h = architecture['activation_fn']
+        #self.h = architecture['activation_fn'] ##where is it?
+        self.h = lambda x: np.maximum(np.zeros(x.shape), x)
 
         if weights is None:
             self.weights = self.random.normal(0, 1, size=(1, self.D))
@@ -89,7 +90,7 @@ class NLM:
 
         assert input.shape[1] == H
 
-        # additional hidden layers
+        # additional hidden layers, except the last one
         for _ in range(self.params['L'] - 1):
             before = index
             W = weights[index:index + H * H].T.reshape((-1, H, H))
@@ -120,7 +121,8 @@ class NLM:
             sigmoid_probability = np.clip(sigmoid_probability, 1e-15, 1 - 1e-15)
             #bce = np.dot(y_train, np.log(sigmoid_probability)) + np.dot((1 - y_train), np.log(1 - sigmoid_probability))
             #bce = np.dot(np.log(sigmoid_probability),y_train.flatten()) + np.dot(np.log(1 - sigmoid_probability),(1 - y_train.flatten())) ##true only for k=2
-            bce = np.dot(np.log(sigmoid_probability),y_train.flatten()).sum()
+            
+            bce = np.dot(np.log(sigmoid_probability),y_train.flatten()).sum() #Cross-Entropy Loss TO VERIFY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             if reg_param is None:
                 sum_error = bce
                 return -sum_error
@@ -212,7 +214,7 @@ class NLM:
         """
         D = self.params['H']  # dimensionality of the feature map
         log_prior = get_log_prior(self.params['prior_distribution'], self.params['prior_parameters'], D)
-        log_likelihood = get_log_likelihood(self.params['likelihood_distribution'], self.params['likelihood_parameters'], self, x_train, y_train, D)
+        log_likelihood = get_log_likelihood(self.params['likelihood_distribution'], self.params['likelihood_parameters'], self, x_train, y_train, D) #we are supposed to take the output of the last layer
         samples = hmc(log_prior, log_likelihood, **params_hmc)
         return samples
 
