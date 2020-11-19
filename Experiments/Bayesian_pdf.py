@@ -35,6 +35,8 @@ def log_logistic_likelihood(params, nlm, X, y, D):
 
     def log_logistic(W):
         mapped_X = nlm.forward(nlm.weights, X, partial=True)  # feature map of the inputs, dimension D
+        print(mapped_X,mapped_X.shape)
+        print(X)
         dot_product = np.dot(W, mapped_X)
         theta = sigmoid(dot_product)
         theta = np.clip(theta, 1e-15, 1 - 1e-15)

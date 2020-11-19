@@ -10,7 +10,8 @@ from Hamiltonian_MC import hmc
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
-
+def softmax(y):   
+            return np.exp(y)/(np.exp(y).sum())
 class NLM:
     """
     This class implements the framework of training of the Neural Linear Model, as introduced in ...
@@ -106,7 +107,7 @@ class NLM:
         # output layer
         W = weights[index:index + H * D_out].T.reshape((-1, D_out, H))
         b = weights[index + H * D_out:].T.reshape((-1, D_out, 1))
-        output = sigmoid(np.matmul(W, input) + b)  # review that for training
+        output = softmax(np.matmul(W, input) + b)  # review that for training
         assert output.shape[1] == self.params['D_out']
 
         return output
@@ -115,9 +116,11 @@ class NLM:
     def make_objective(self, x_train, y_train, reg_param):
 
         def objective(W, t):
-            sigmoid_probability = self.forward(W, x_train).flatten()
+            sigmoid_probability = self.forward(W, x_train)
             sigmoid_probability = np.clip(sigmoid_probability, 1e-15, 1 - 1e-15)
-            bce = np.dot(y_train, np.log(sigmoid_probability)) + np.dot((1 - y_train), np.log(1 - sigmoid_probability))
+            #bce = np.dot(y_train, np.log(sigmoid_probability)) + np.dot((1 - y_train), np.log(1 - sigmoid_probability))
+            #bce = np.dot(np.log(sigmoid_probability),y_train.flatten()) + np.dot(np.log(1 - sigmoid_probability),(1 - y_train.flatten())) ##true only for k=2
+            bce = np.dot(np.log(sigmoid_probability),y_train.flatten()).sum()
             if reg_param is None:
                 sum_error = bce
                 return -sum_error
