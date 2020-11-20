@@ -23,7 +23,7 @@ class Feedforward:
         else:
             self.random = np.random.RandomState(0)
 
-        self.h = architecture['activation_fn']
+        self.h = lambda x: np.maximum(np.zeros(x.shape), x)
 
         if weights is None:
             self.weights = self.random.normal(0, 1, size=(1, self.D))
@@ -68,7 +68,7 @@ class Feedforward:
 
             assert input.shape[1] == H
 
-        def softmax(y):   
+        def softmax(y):
             return np.exp(y)/(np.exp(y).sum())
 
         def sigmoid(y):   
@@ -77,7 +77,10 @@ class Feedforward:
        # output layer
         W = weights[index:index + H * D_out].T.reshape((-1, D_out, H))
         b = weights[index + H * D_out:].T.reshape((-1, D_out, 1))
-        output = softmax(np.matmul(W, input) + b)  # review that for training
+        #print('W',W.shape,W)
+        #print('b',b.shape,b)
+        #output = softmax(np.matmul(W, input) + b)  # review that for training
+        output = np.array([[softmax(np.matmul(W, input)[0][i] + b[0][i]) for i in range(D_out)]])
         assert output.shape[1] == self.params['D_out']
 
         return output
