@@ -10,7 +10,8 @@ from Hamiltonian_MC import hmc
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
-
+def softmax(y):   
+            return np.exp(y)/(np.exp(y).sum())
 class NLM:
     """
     This class implements the framework of training of the Neural Linear Model, as introduced in ...
@@ -55,7 +56,8 @@ class NLM:
         else:
             self.random = np.random.RandomState(0)
 
-        self.h = architecture['activation_fn']
+        #self.h = architecture['activation_fn'] ##where is it?
+        self.h = lambda x: np.maximum(np.zeros(x.shape), x)
 
         if weights is None:
             self.weights = self.random.normal(0, 1, size=(1, self.D))
@@ -88,7 +90,7 @@ class NLM:
 
         assert input.shape[1] == H
 
-        # additional hidden layers
+        # additional hidden layers, except the last one
         for _ in range(self.params['L'] - 1):
             before = index
             W = weights[index:index + H * H].T.reshape((-1, H, H))
@@ -106,7 +108,7 @@ class NLM:
         # output layer
         W = weights[index:index + H * D_out].T.reshape((-1, D_out, H))
         b = weights[index + H * D_out:].T.reshape((-1, D_out, 1))
-        output = sigmoid(np.matmul(W, input) + b)  # review that for training
+        output = softmax(np.matmul(W, input) + b)  # review that for training
         assert output.shape[1] == self.params['D_out']
 
         return output
@@ -115,9 +117,11 @@ class NLM:
     def make_objective(self, x_train, y_train, reg_param):
 
         def objective(W, t):
-            sigmoid_probability = self.forward(W, x_train).flatten()
-            sigmoid_probability = np.clip(sigmoid_probability, 1e-15, 1 - 1e-15)
-            bce = np.dot(y_train, np.log(sigmoid_probability)) + np.dot((1 - y_train), np.log(1 - sigmoid_probability))
+            sigmoid_probability = self.forward(W, x_train)
+            ## foutre une proba 
+            sigmoid_p=sigmoid(sigmoid_probability)
+            sigmoid_p = np.clip(sigmoid_probability, 1e-15, 1 - 1e-15)            
+            bce = np.dot(np.log(sigmoid_p),y_train.flatten()).mean() #Cross-Entropy Loss 
             if reg_param is None:
                 sum_error = bce
                 return -sum_error
@@ -212,7 +216,7 @@ class NLM:
         """
         D = self.params['H']  # dimensionality of the feature map
         log_prior = get_log_prior(self.params['prior_distribution'], self.params['prior_parameters'], D)
-        log_likelihood = get_log_likelihood(self.params['likelihood_distribution'], self.params['likelihood_parameters'], self, x_train, y_train, D)
+        log_likelihood = get_log_likelihood(self.params['likelihood_distribution'], self.params['likelihood_parameters'], self, x_train, y_train, D) #we are supposed to take the output of the last layer
         samples = hmc(log_prior, log_likelihood, **params_hmc)
         return samples
 
