@@ -69,7 +69,8 @@ class Feedforward:
             assert input.shape[1] == H
 
         def softmax(y):
-            return np.exp(y)/(np.exp(y).sum())
+            y=y[0]
+            return np.exp(y)/(np.exp(y).sum(1).reshape(D_out,-1))   
 
         def sigmoid(y):   
             return 1/(1 + np.exp(-y))
@@ -79,8 +80,8 @@ class Feedforward:
         b = weights[index + H * D_out:].T.reshape((-1, D_out, 1))
         #print('W',W.shape,W)
         #print('b',b.shape,b)
-        #output = softmax(np.matmul(W, input) + b)  # review that for training
-        output = np.array([[softmax(np.matmul(W, input)[0][i] + b[0][i]) for i in range(D_out)]])
+        output = np.array([softmax(np.matmul(W, input) + b)])  # review that for training
+        #output = np.array([[softmax(np.matmul(W, input)[0][i] + b[0][i]) for i in range(D_out)]])
         assert output.shape[1] == self.params['D_out']
 
         return output
