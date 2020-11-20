@@ -118,11 +118,10 @@ class NLM:
 
         def objective(W, t):
             sigmoid_probability = self.forward(W, x_train)
-            sigmoid_probability = np.clip(sigmoid_probability, 1e-15, 1 - 1e-15)
-            #bce = np.dot(y_train, np.log(sigmoid_probability)) + np.dot((1 - y_train), np.log(1 - sigmoid_probability))
-            #bce = np.dot(np.log(sigmoid_probability),y_train.flatten()) + np.dot(np.log(1 - sigmoid_probability),(1 - y_train.flatten())) ##true only for k=2
-            
-            bce = np.dot(np.log(sigmoid_probability),y_train.flatten()).sum() #Cross-Entropy Loss TO VERIFY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            ## foutre une proba 
+            sigmoid_p=sigmoid(sigmoid_probability)
+            sigmoid_p = np.clip(sigmoid_probability, 1e-15, 1 - 1e-15)            
+            bce = np.dot(np.log(sigmoid_p),y_train.flatten()).mean() #Cross-Entropy Loss 
             if reg_param is None:
                 sum_error = bce
                 return -sum_error
