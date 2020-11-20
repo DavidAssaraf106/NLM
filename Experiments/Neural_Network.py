@@ -108,7 +108,8 @@ class NLM:
         # output layer
         W = weights[index:index + H * D_out].T.reshape((-1, D_out, H))
         b = weights[index + H * D_out:].T.reshape((-1, D_out, 1))
-        output = softmax(np.matmul(W, input) + b)  # review that for training
+        #output = softmax(np.matmul(W, input) + b)  # review that for training
+        output = np.array([[softmax(np.matmul(W, input)[0][i] + b[0][i]) for i in range(D_out)]])
         assert output.shape[1] == self.params['D_out']
 
         return output
