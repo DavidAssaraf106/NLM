@@ -33,13 +33,28 @@ def log_logistic_likelihood(params, nlm, X, y, D):
     def sigmoid(z):
         return 1. / (1. + np.exp(-z))
 
-    def log_logistic(W):
-        mapped_X = nlm.forward(nlm.weights, X, partial=True)  # feature map of the inputs, dimension D
-        dot_product = np.dot(W, mapped_X)
-        theta = sigmoid(dot_product)
-        theta = np.clip(theta, 1e-15, 1 - 1e-15)
-        loglkhd = y * np.log(theta) + (1 - y) * np.log(1 - theta)
-        return np.sum(loglkhd)
+    def log_logistic(W, w_dernier):
+        # w_dernier: w_1, w_2, w_3, ...., w_18 
+        mapped_X = nlm.forward(W, X, partial=True)  # feature map of the inputs, dimension D
+        # mapped_X has dimension (5,600)
+        # dot_product = np.dot(weight_to_be_found, mapped_X)  
+        # theta = sigmoid(dot_product)
+        # theta = np.clip(theta, 1e-15, 1 - 1e-15)
+        # loglkhd = y * np.log(theta) + (1 - y) * np.log(1 - theta)
+        # return np.sum(loglkhd)
+        ###############
+        # Modifying
+        ###############
+        # p(w_dernier|y_i, x_i, hd(i))\propto p(y_i|w_dernier,hd(i))
+        p_w_total=0
+        for i in range(600):
+            # get from mapped_X the ith column
+            hd=mapped_X[:,i]
+            g_1=relu(hd[0]*w1+hd[1]*w2+hd[2]*w3+hd[3]*w4+hd[4]*w5+w16)
+            g_2=relu(hd[0]*w6+hd[1]*w7+hd[2]*w8+hd[3]*w9+hd[4]*w10+w17)
+            g_3=relu(hd[0]*w11+hd[1]*w12+hd[2]*w13+hd[3]*w14+hd[4]*w15+w18)
+            p_w_total+=g_1+g_2+g_3
+        return p_w_total
 
     return log_logistic
 
