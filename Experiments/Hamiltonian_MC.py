@@ -42,35 +42,31 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
         p_current = K_gibbs_sampler()  # sample a random momentum from the Gibbs distribution
 
         # calc position and momentum after L steps (initaliate intermediate vars)
-
         q_proposal = q_current.copy()
         p_proposal = p_current.copy()
-        ##print(q_proposal,p_proposal)
+
         # Leap-frog
         for j in range(L):
             # half-step update for momentum
             p_step_t_half = p_proposal - (step_size / 2.) * grad_U(q_proposal)
             # full step update for position
-            q_proposal += step_size * grad_K(p_step_t_half)
+            q_proposal += step_size * p_step_t_half
             # half-step update for momentum
             p_proposal = p_step_t_half - (step_size / 2.) * grad_U(q_proposal)
 
-
-        p_proposal = -p_proposal  # reverse momentum to ensure detail balance/reversibility
+        p_proposal = - p_proposal.copy()  # reverse momentum to ensure detail balance/reversibility
+    
         # accept/reject new proposed position
         H_proposal = U(q_proposal) + K(p_proposal)
         H_current = U(q_current) + K(p_current)
+        proposal=np.exp(H_current - H_proposal)
 
-
-        alpha = min(1, np.exp(H_current - H_proposal))
-
+        alpha = min(1,proposal)
 
         if np.random.uniform() <= alpha:
             accept += 1  # you should keep track of your acceptances
             q_current = q_proposal.copy()
-
-        samples.append(q_current.flatten())
-        ##print(q_proposal,p_proposal,'\n')
+            samples.append(q_current.flatten())
         i += 1
 
     # burn and thin
