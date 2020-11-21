@@ -59,23 +59,16 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
         # accept/reject new proposed position
         H_proposal = U(q_proposal) + K(p_proposal)
         H_current = U(q_current) + K(p_current)
-<<<<<<< HEAD
         proposal=np.exp(H_current - H_proposal)
-        print(proposal)
-=======
-        proposal = np.exp(H_current - H_proposal)
->>>>>>> 41711a589329220fc51b470a9449482e1ac38577
+
 
         alpha = min(1, proposal)
 
         if np.random.uniform() <= alpha:
             accept += 1  # you should keep track of your acceptances
             q_current = q_proposal.copy()
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> 41711a589329220fc51b470a9449482e1ac38577
+
         samples.append(q_current.flatten())
         i += 1
 
