@@ -608,13 +608,13 @@ def two_moon(n = 1500, noise_input=.01, plot=False):
     return boundary, class1, class2
 
 
-def four_moon(n = 1500, noise_input=.01, plot=False, matrix=[[1,0],[0,2]],translate=[2,2]):
+def four_moon(n = 1500, noise_input=.01, plot=False, matrix=[[1,0],[0,1]],translate=[2,2]):
     """
     INPUTS: 
-    n: the number of points in thefours half-moons is 2*n (n/2 for each half moon)
+    n: the number of points in the fours half-moons is 2*n (n/2 for each half moon)
     noise_input: allow to have more noisy half-moons (the boundary won't be more noisy)
     plot: if set to True, will return the plot
-    matrix: we have to copy of the same two half-moons: the second copy is a linear transformation Ax+b
+    matrix: we have two copy of the same two half-moons: the second copy is a linear transformation Ax+b
     where A=matrix, b=translate
     
     OUTPUTS:
@@ -667,3 +667,79 @@ def four_moon(n = 1500, noise_input=.01, plot=False, matrix=[[1,0],[0,2]],transl
         plt.show()
         
     return boundary, class1, class2, class3, class4
+
+
+def six_moon(n = 1500, noise_input=.01, plot=False, matrix1=[[1,0],[0,1]],translate1=[2,2], matrix2=[[-1,2],[0,1]], translate2=[-2,-2]):
+    """
+    INPUTS: 
+    n: the number of points in the six half-moons is 3*n (n/2 for each half moon)
+    noise_input: allow to have more noisy half-moons (the boundary won't be more noisy)
+    plot: if set to True, will return the plot
+    matrix: we have three copy of the same two half-moons: the second,third copies are linear transformation Ax+b
+    where A=matrix1 or matrix2, b=translate1 or translate2
+    
+    OUTPUTS:
+    a plot (if plot=True)
+    boundary class
+    class1
+    class2 
+    class3
+    class4
+    class5
+    class6
+    
+    """
+    n_call=n
+    noise_call=noise_input
+    boundary_i,class1_i,class2_i=moon(n=n_call, noise_input= noise_call)
+    for i in range(len(boundary_i[0])):
+        x=boundary_i[0][i]
+        y=boundary_i[1][i]
+        trans01=np.matmul(matrix1,[x,y])+translate1
+        trans02=np.matmul(matrix2,[x,y])+translate2
+        boundary_i[0].append(trans01[0])
+        boundary_i[1].append(trans01[1])
+        boundary_i[0].append(trans02[0])
+        boundary_i[1].append(trans02[1])
+    
+    class3=[[],[]]
+    class4=[[],[]]
+    class5=[[],[]]
+    class6=[[],[]]
+    for i in range(len(class1_i[0])):
+        x1=class1_i[0][i]
+        y1=class1_i[1][i]
+        x2=class2_i[0][i]
+        y2=class2_i[1][i]
+        trans1=np.matmul(matrix1,[x1,y1])+translate1
+        trans2=np.matmul(matrix1,[x2,y2])+translate1
+        trans3=np.matmul(matrix2,[x1,y1])+translate2
+        trans4=np.matmul(matrix2,[x2,y2])+translate2
+        class3[0].append(trans1[0])
+        class3[1].append(trans1[1])
+        class4[0].append(trans2[0])
+        class4[1].append(trans2[1])
+        class5[0].append(trans3[0])
+        class5[1].append(trans3[1])
+        class6[0].append(trans4[0])
+        class6[1].append(trans4[1])
+    
+    boundary=boundary_i
+    class1=class1_i
+    class2=class2_i
+    
+    # plot if necessary
+    # boundary class in blue
+    # classes in red and yellow
+    if plot==True:
+        f,ax=plt.subplots(1,1,figsize=(12,12))
+        ax.plot(boundary[0],boundary[1],'x',c='b')
+        ax.plot(class1[0],class1[1],'x',c='y')
+        ax.plot(class2[0],class2[1],'x',c='r')
+        ax.plot(class3[0],class3[1],'x',c='k')
+        ax.plot(class4[0],class4[1],'x',c='g')
+        ax.plot(class5[0],class5[1],'x',c='m')
+        ax.plot(class6[0],class6[1],'x',c='c')
+        plt.show()
+        
+    return boundary, class1, class2, class3, class4, class5, class6
