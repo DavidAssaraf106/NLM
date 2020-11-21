@@ -486,3 +486,123 @@ def create_four_classes(n=1500, noise_input=0.05, plot=False, factor_1=0.3, posi
     class4=[X_7,Y_7]
     
     return boundary, class1, class2, class3, class4
+
+
+########## Moons ##########
+
+from scipy.interpolate import lagrange
+import numpy as np
+
+def moon(n = 1500, noise_input=.01, plot=False):
+    """
+    INPUTS: 
+    n: the number of points in the two half-moons (n/2 for each half moon)
+    noise_input: allow to have more noisy half-moons (the boundary won't be more noisy)
+    plot: if set to True, will return the plot
+    
+    OUTPUTS:
+    a plot (if plot=True)
+    boundary class
+    class1
+    class2 
+    
+    """
+    
+    # create the half-moons using sklearn function
+    noisy_moons = datasets.make_moons(n_samples=n, noise=noise_input)
+    
+    # get the two classes
+    X_1=[]
+    Y_1=[]
+    X_2=[]
+    Y_2=[]
+    for i in range(len(noisy_moons[0])):
+        if noisy_moons[1][i]==0:
+            X_1.append(noisy_moons[0][i][0])
+            Y_1.append(noisy_moons[0][i][1])
+        else:
+            X_2.append(noisy_moons[0][i][0])
+            Y_2.append(noisy_moons[0][i][1])
+            
+    #######################
+    # create the boundaries
+    #######################
+    x11=[-1.1 , -0.9, -0.75, 0, 0.75, 0.9, 1.1]
+    y11=[-0.1 , 0.6,  0.8, 1.05, 0.8, 0.6, -0.1]
+    poly11 = lagrange(x11, y11)
+
+    x12=[ -0.9, -0.75, 0, 0.75, 0.9]
+    y12=[ 0.1,  0.5, 0.9, 0.5, 0.1]
+    poly12 = lagrange(x12, y12)
+
+    x13=[ -1.1,-1,-0.9]
+    y13=[ -0.1, -0.08, 0.1]
+    poly13 = lagrange(x13, y13)
+
+    x14=[ 0.9,1,1.1]
+    y14=[ 0.1, -0.08, -0.1]
+    poly14 = lagrange(x14, y14)
+
+    x21=[-0.1 , 0.1, 0.25, 1, 1.75, 1.9, 2.1]
+    y21=[0.6 , -0.1,  -0.3, -0.55, -0.3, -0.1, 0.6]
+    poly21 = lagrange(x21, y21)
+
+    x22=[ 0.1, 0.25, 1, 1.75, 1.9]
+    y22=[ 0.4,  0, -0.4, 0, 0.4]
+    poly22 = lagrange(x22, y22)
+
+    x23=[-0.1, 0, 0.1]
+    y23=[0.6, 0.58, 0.4]
+    poly23 = lagrange(x23, y23)
+
+    x24=[ 1.9,2,2.1]
+    y24=[0.4, 0.58, 0.6]
+    poly24 = lagrange(x24, y24)
+
+    x_ax11=np.linspace(-1.1,1.1,1000)
+    y_ax11=poly(x_ax11)
+    x_ax12=np.linspace(-0.9,0.9,1000)
+    y_ax12=poly12(x_ax12)
+    x_ax13=np.linspace(-1.1,-0.9,100)
+    y_ax13=poly13(x_ax13)
+    x_ax14=np.linspace(0.9,1.1,100)
+    y_ax14=poly14(x_ax14)
+    x_ax21=np.linspace(-0.1,2.1,1000)
+    y_ax21=poly21(x_ax21)
+    x_ax22=np.linspace(0.1,1.9,1000)
+    y_ax22=poly22(x_ax22)
+    x_ax23=np.linspace(-0.1,0.1,100)
+    y_ax23=poly23(x_ax23)
+    x_ax24=np.linspace(1.9,2.1,100)
+    y_ax24=poly24(x_ax24)
+    
+    #######################
+    # finished the boundaries
+    #######################
+
+    
+    # plot if necessary
+    # boundary class in blue
+    # classes in red and yellow
+    if plot==True:
+        f,ax=plt.subplots(1,1,figsize=(12,12))
+        ax.plot(X_1,Y_1,'x', c='r')
+        ax.plot(X_2,Y_2,'x', c='y')
+        ax.plot(x_ax11,y_ax11,'x', c='b')
+        ax.plot(x_ax12,y_ax12,'x', c='b')
+        ax.plot(x_ax13,y_ax13,'x', c='b')
+        ax.plot(x_ax14,y_ax14,'x', c='b')
+        ax.plot(x_ax21,y_ax21,'x', c='b')
+        ax.plot(x_ax22,y_ax22,'x', c='b')
+        ax.plot(x_ax23,y_ax23,'x', c='b')
+        ax.plot(x_ax24,y_ax24,'x', c='b')
+        plt.show()
+        
+    # Outputs  
+    class1=[X_1,Y_1]
+    class2=[X_2,Y_2]
+    bx=list(x_ax11)+list(x_ax12)+list(x_ax13)+list(x_ax14)+list(x_ax21)+list(x_ax22)+list(x_ax23)+list(x_ax24)
+    by=list(y_ax11)+list(y_ax12)+list(y_ax13)+list(y_ax14)+list(y_ax21)+list(y_ax22)+list(y_ax23)+list(y_ax24)
+    boundary=[bx,by]
+    
+    return boundary, class1, class2
