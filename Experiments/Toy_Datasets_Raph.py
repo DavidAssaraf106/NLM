@@ -493,7 +493,7 @@ def create_four_classes(n=1500, noise_input=0.05, plot=False, factor_1=0.3, posi
 from scipy.interpolate import lagrange
 import numpy as np
 
-def moon(n = 1500, noise_input=.01, plot=False):
+def two_moon(n = 1500, noise_input=.01, plot=False):
     """
     INPUTS: 
     n: the number of points in the two half-moons (n/2 for each half moon)
