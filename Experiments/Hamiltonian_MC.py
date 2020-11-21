@@ -51,50 +51,26 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
             # half-step update for momentum
             p_step_t_half = p_proposal - (step_size / 2.) * grad_U(q_proposal)
             # full step update for position
-            q_proposal += step_size * p_step_t_half
+            q_proposal += step_size * grad_K(p_step_t_half)
             # half-step update for momentum
-<<<<<<< HEAD
-            p_proposal -= step_size / 2 * grad_U(q_proposal)
-
-<<<<<<< HEAD
-        p_proposal = -p_proposal  # reverse momentum to ensure detail balance/reversibility
-=======
-        p_current = -p_proposal  # reverse momentum to ensure detail balance/reversibility
->>>>>>> main
-=======
             p_proposal = p_step_t_half - (step_size / 2.) * grad_U(q_proposal)
->>>>>>> gael
 
-        p_proposal = - p_proposal.copy()  # reverse momentum to ensure detail balance/reversibility
-    
+
+        p_proposal = -p_proposal  # reverse momentum to ensure detail balance/reversibility
         # accept/reject new proposed position
         H_proposal = U(q_proposal) + K(p_proposal)
         H_current = U(q_current) + K(p_current)
-<<<<<<< HEAD
+
 
         alpha = min(1, np.exp(H_current - H_proposal))
-=======
-        proposal=np.exp(H_current - H_proposal)
-        ##print(proposal)
-        alpha = min(1,proposal)
->>>>>>> main
+
 
         if np.random.uniform() <= alpha:
             accept += 1  # you should keep track of your acceptances
-<<<<<<< HEAD
-            q_current = q_proposal
-<<<<<<< HEAD
+            q_current = q_proposal.copy()
 
         samples.append(q_current.flatten())
-=======
-            samples.append(q_current.flatten())
->>>>>>> main
-
-=======
-            q_current = q_proposal.copy()
-            samples.append(q_current.flatten())
         ##print(q_proposal,p_proposal,'\n')
->>>>>>> gael
         i += 1
 
     # burn and thin

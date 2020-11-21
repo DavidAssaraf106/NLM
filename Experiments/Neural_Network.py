@@ -10,8 +10,16 @@ from Hamiltonian_MC import hmc
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
-def softmax(y):   
-            return np.exp(y)/(np.exp(y).sum())
+def softmax(y):  # checked, ok for softmax and the dimensions
+    """
+    This function is used to perform multi-class classification. This should be the activation function.
+    We need to handle the cases where the shape of the input are going to be (1, K, batch_size)
+    """
+    D = y.shape[1]
+    z = y.flatten().reshape(D, -1)
+    z = np.exp(z)
+    return z/np.sum(z, axis=0)
+
 class NLM:
     """
     This class implements the framework of training of the Neural Linear Model, as introduced in ...
@@ -56,8 +64,7 @@ class NLM:
         else:
             self.random = np.random.RandomState(0)
 
-        #self.h = architecture['activation_fn'] ##where is it?
-        self.h = lambda x: np.maximum(np.zeros(x.shape), x)
+        self.h = architecture['activation_fn']  # where is it?, it is in the parameters where we define the NN
 
         if weights is None:
             self.weights = self.random.normal(0, 1, size=(1, self.D))
@@ -67,6 +74,7 @@ class NLM:
         self.objective_trace = np.empty((1, 1))
         self.weight_trace = np.empty((1, self.D))
 
+    # todo in the forward: output a probability with a softmax function at the output node
     def forward(self, weights, x, partial=False):
         ''' Forward pass given weights and input '''
         H = self.params['H']
@@ -108,30 +116,38 @@ class NLM:
         # output layer
         W = weights[index:index + H * D_out].T.reshape((-1, D_out, H))
         b = weights[index + H * D_out:].T.reshape((-1, D_out, 1))
-        #output = softmax(np.matmul(W, input) + b)  # review that for training
-        output = np.array([[softmax(np.matmul(W, input)[0][i] + b[0][i]) for i in range(D_out)]])
+        output = np.matmul(W, input) + b
+        output = softmax(output).T
         assert output.shape[1] == self.params['D_out']
 
         return output
 
 
     def make_objective(self, x_train, y_train, reg_param):
-
+        # We are in the case of multi-task classification. The labels need to be one-hot encoded and the loss function we
+        # will use is the Categorical Cross Entropy. This needs to be done in the Output Layer. Therefore, the output layer
+        # produces a vector of dimension (K, 1) for every input, where K is the number of classes. Every element of this
+        # output vector is a probability
+        # reference to categorical cross-entropy : https://gombru.github.io/2018/05/23/cross_entropy_loss/
         def objective(W, t):
-            sigmoid_probability = self.forward(W, x_train)
-            ## foutre une proba 
-            sigmoid_p=sigmoid(sigmoid_probability)
-            sigmoid_p = np.clip(sigmoid_probability, 1e-15, 1 - 1e-15)            
-            bce = np.dot(np.log(sigmoid_p),y_train.flatten()).mean() #Cross-Entropy Loss 
+
+            softmax_probability = self.forward(W, x_train)  # is of size (x_train, K)
+            softmax_p = np.clip(softmax_probability, 1e-15, 1 - 1e-15)
+            # here, y_train is of size (batch_size, K)
+            # softmax_p is of size (batch_size, K)
+            # in the single label classification (every training point has only one label)
+            Cat_cross_entropy = np.sum(y_train.T * np.log(softmax_p), axis=1)  # vector of size(len(x_train, 1))
+            total_cat_ce = np.mean(Cat_cross_entropy)
             if reg_param is None:
-                sum_error = bce
+                sum_error = total_cat_ce
                 return -sum_error
             else:
-                mean_error = bce + reg_param * np.linalg.norm(W)
+                mean_error = total_cat_ce + reg_param * np.linalg.norm(W)
                 return -mean_error
 
         return objective, grad(objective)
 
+    # todo: check that y is one-hot encoded in the training phase
     def fit_MLE(self, x_train, y_train, params, reg_param=None):
 
         assert x_train.shape[0] == self.params['D_in']
@@ -209,10 +225,7 @@ class NLM:
         - L: The number of steps in the Leap Frog Estimator
         - init: The initial position of the HMC
         - burn: Burn-in parameter
-<<<<<<< HEAD
-=======
         - thin: Thinning factor
->>>>>>> main
         :return: Samples from the posterior distribution.
         """
         D = self.params['H']  # dimensionality of the feature map
@@ -246,7 +259,13 @@ class Classifier:
 
     def predict(self, x):
         p = self.forward(self.weights, x.T)
-        return (p > 0.5).astype(np.int_)
+        classes = []
+        for i in range(p.shape[0]):
+            classe = np.zeros(p.shape[1])
+            biggest_probability = np.argmax(p[i]).flatten()
+            classe[biggest_probability] = 1
+            classes.append(classe)
+        return np.array(classes)
 
     def predict_proba(self, x):
         return self.forward(self.weights, x.T)
