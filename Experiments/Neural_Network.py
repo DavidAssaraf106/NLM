@@ -74,7 +74,7 @@ class NLM:
         self.objective_trace = np.empty((1, 1))
         self.weight_trace = np.empty((1, self.D))
 
-    # todo in the forward: output a probability with a softmax function at the output node
+    # todo: fix a nan in gradient
     def forward(self, weights, x, partial=False):
         ''' Forward pass given weights and input '''
         H = self.params['H']
