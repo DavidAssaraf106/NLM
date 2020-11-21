@@ -16,7 +16,7 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
     Note: We imposed here the choice of mass m = 1 and a quadratic Kinetic Energy providing a Normal Gibbs Sampler
     """
     def U(W):
-        return -1 * (log_likelihood(W) + log_prior(W))
+        return -1 * (log_likelihood(W).flatten() + log_prior(W).flatten())
 
     def K(W):
         return np.sum(W ** 2) / 2
@@ -37,7 +37,7 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
     for i in range(num_samples):
 
         if i % 100 == 0 and i > 0:
-            print(i, ':', accept * 1. / i,accept == i)
+            print(i, ':', accept * 1. / i)
 
         p_current = K_gibbs_sampler()  # sample a random momentum from the Gibbs distribution
 
@@ -59,15 +59,23 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
         # accept/reject new proposed position
         H_proposal = U(q_proposal) + K(p_proposal)
         H_current = U(q_current) + K(p_current)
+<<<<<<< HEAD
         proposal=np.exp(H_current - H_proposal)
         print(proposal)
+=======
+        proposal = np.exp(H_current - H_proposal)
+>>>>>>> 41711a589329220fc51b470a9449482e1ac38577
 
-        alpha = min(1,proposal)
+        alpha = min(1, proposal)
 
         if np.random.uniform() <= alpha:
             accept += 1  # you should keep track of your acceptances
             q_current = q_proposal.copy()
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 41711a589329220fc51b470a9449482e1ac38577
         samples.append(q_current.flatten())
         i += 1
 

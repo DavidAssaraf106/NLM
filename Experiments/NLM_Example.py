@@ -1,5 +1,4 @@
 import warnings
-# import tensorflow as tf
 
 warnings.filterwarnings('ignore')
 
@@ -10,8 +9,9 @@ from Toy_Datasets import two_clusters_gaussian, plot_decision_boundary
 import autograd.numpy as np
 from pandas import get_dummies
 from Hamiltonian_MC import hmc
-import matplotlib.pyplot as plt
-import warnings
+# import matplotlib.pyplot as plt
+from Bayesian_pdf import get_log_prior, get_log_likelihood
+from sklearn.linear_model import LogisticRegression
 # import tensorflow as tf
 
 
@@ -286,6 +286,43 @@ def test_decision_boundary(max_iteration):
 
 
 
+def sigmoid(z):
+    return 1. / (1. + np.exp(-z))
+
+
+
+def HMC_Unit_test():
+    # Generate a toy dataset for classification
+    samples = 100
+    class_0 = np.random.multivariate_normal([-1, -1], 0.5 * np.eye(2), samples)
+    class_1 = np.random.multivariate_normal([1, 1], 0.5 * np.eye(2), samples)
+    x = np.vstack((class_0, class_1))
+    y = np.array([0] * 100 + [1] * 100)
+    mean = np.zeros(3)
+    cov = 10*np.eye(3)
+    D = 3
+
+    def log_likelihood(w):
+        theta = sigmoid(w[0] + np.dot(x, w[1:]))
+        theta = np.clip(theta, 1e-15, 1-1e-15)
+        loglkhd = y * np.log(theta) + (1 - y) * np.log(1 - theta)
+        return np.sum(loglkhd)
+
+    def log_normal_prior(W):
+        logprior = -0.5 * (np.log(np.linalg.det(cov)) + D * np.log(2 * np.pi))
+        logprior += -0.5 * np.dot(np.dot(W-mean, np.linalg.inv(cov)), (W-mean).T)
+        return logprior
+
+    log_prior = log_normal_prior
+    log_likelihood = log_likelihood
+    lr = LogisticRegression(C=1., penalty='l2', solver='saga', tol=0.1)
+    lr.fit(x, y)
+    position_init = np.hstack((lr.coef_.flatten(), lr.intercept_))
+    position_init = position_init.reshape((1, 3))[0]
+    samples = hmc(log_prior, log_likelihood, 1000,  1e-3, 20, position_init, 0.1, 1)
+
+
+
 
 if __name__ == '__main__':
-    test_decision_boundary(10000)
+    HMC_Unit_test()
