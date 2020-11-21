@@ -38,7 +38,7 @@ def log_logistic_likelihood(params, nlm, X, y):
         return 1. / (1. + np.exp(-z))
 
     def log_logistic(W):  # test in dimension 2
-        mapped_X = nlm.forward(W, X, partial=True)  # feature map of the inputs (output of the last hdl), dimension (1,D,num_dots) 
+        mapped_X = nlm.forward(W, X, partial=True)  # feature map of the inputs (output of the last hdl), dimension (1,D,num_dots)
         # ---> W=W[-18:].reshape(3,-1)
         # transform mapped_X: shape[0]=5 --> shape[0]=3
         dot_product = np.dot(W, mapped_X) # !!! dimension problem: D_weights ≠ (1,D,num_dots)
@@ -58,7 +58,3 @@ def get_log_prior(type, params):
 def get_log_likelihood(type, params, nlm, X, y):
     mapping = {'logistic': log_logistic_likelihood}
     return mapping[type](params, nlm, X, y)
-
-
-
-
