@@ -15,7 +15,6 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
     :return: Samples of our posterior distribution using HMC. Shape: (D, (num_samples-burn)/thin)
     Note: We imposed here the choice of mass m = 1 and a quadratic Kinetic Energy providing a Normal Gibbs Sampler
     """
-
     def U(W):
         return -1 * (log_likelihood(W) + log_prior(W))
 
@@ -38,52 +37,40 @@ def hmc(log_prior, log_likelihood, num_samples, step_size, L, init, burn, thin):
     for i in range(num_samples):
 
         if i % 100 == 0 and i > 0:
-            print(i, ':', accept * 1. / i)
+            print(i, ':', accept * 1. / i,accept == i)
 
         p_current = K_gibbs_sampler()  # sample a random momentum from the Gibbs distribution
 
         # calc position and momentum after L steps (initaliate intermediate vars)
 
-        q_proposal = q_current
-        p_proposal = p_current
-
+        q_proposal = q_current.copy()
+        p_proposal = p_current.copy()
+        ##print(q_proposal,p_proposal)
         # Leap-frog
         for j in range(L):
             # half-step update for momentum
-            p_proposal -= step_size / 2 * grad_U(q_proposal)
+            p_step_t_half = p_proposal - (step_size / 2.) * grad_U(q_proposal)
             # full step update for position
-            q_proposal += step_size * grad_K(p_proposal)
+            q_proposal += step_size * grad_K(p_step_t_half)
             # half-step update for momentum
-            p_proposal -= step_size / 2 * grad_U(q_proposal)
+            p_proposal = p_step_t_half - (step_size / 2.) * grad_U(q_proposal)
 
-<<<<<<< HEAD
+
         p_proposal = -p_proposal  # reverse momentum to ensure detail balance/reversibility
-=======
-        p_current = -p_proposal  # reverse momentum to ensure detail balance/reversibility
->>>>>>> main
-
         # accept/reject new proposed position
         H_proposal = U(q_proposal) + K(p_proposal)
         H_current = U(q_current) + K(p_current)
-<<<<<<< HEAD
+
 
         alpha = min(1, np.exp(H_current - H_proposal))
-=======
-        proposal=np.exp(H_current - H_proposal)
-        print(proposal)
-        alpha = min(1,proposal)
->>>>>>> main
+
 
         if np.random.uniform() <= alpha:
             accept += 1  # you should keep track of your acceptances
-            q_current = q_proposal
-<<<<<<< HEAD
+            q_current = q_proposal.copy()
 
         samples.append(q_current.flatten())
-=======
-            samples.append(q_current.flatten())
->>>>>>> main
-
+        ##print(q_proposal,p_proposal,'\n')
         i += 1
 
     # burn and thin

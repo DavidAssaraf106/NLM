@@ -23,7 +23,7 @@ class Feedforward:
         else:
             self.random = np.random.RandomState(0)
 
-        self.h = architecture['activation_fn']
+        self.h = lambda x: np.maximum(np.zeros(x.shape), x)
 
         if weights is None:
             self.weights = self.random.normal(0, 1, size=(1, self.D))
@@ -68,14 +68,20 @@ class Feedforward:
 
             assert input.shape[1] == H
 
-        def sigmoid(y):
+        def softmax(y):
+            y=y[0]
+            return np.exp(y)/(np.exp(y).sum(1).reshape(D_out,-1))   
+
+        def sigmoid(y):   
             return 1/(1 + np.exp(-y))
 
-
-        # output layer
+       # output layer
         W = weights[index:index + H * D_out].T.reshape((-1, D_out, H))
         b = weights[index + H * D_out:].T.reshape((-1, D_out, 1))
-        output = sigmoid(np.matmul(W, input) + b)  # review that for training
+        #print('W',W.shape,W)
+        #print('b',b.shape,b)
+        output = np.array([softmax(np.matmul(W, input) + b)])  # review that for training
+        #output = np.array([[softmax(np.matmul(W, input)[0][i] + b[0][i]) for i in range(D_out)]])
         assert output.shape[1] == self.params['D_out']
 
         return output
@@ -83,14 +89,15 @@ class Feedforward:
     def make_objective(self, x_train, y_train, reg_param):
 
         def objective(W, t):
-            sigmoid_probability = self.forward(W, x_train).flatten()
+            sigmoid_probability = self.forward(W, x_train)
             sigmoid_probability = np.clip(sigmoid_probability, 1e-15, 1 - 1e-15)
-            bce = np.dot(y_train, np.log(sigmoid_probability)) + np.dot((1 - y_train), np.log(1 - sigmoid_probability))
+            #bce = np.dot(np.log(sigmoid_probability),y_train.flatten()) + np.dot(np.log(1 - sigmoid_probability),(1 - y_train.flatten())) ##true only for k=2
+            bce = np.dot(np.log(sigmoid_probability), y_train.flatten())
             if reg_param is None:
-                sum_error = bce
+                sum_error = bce.sum()
                 return -sum_error
             else:
-                mean_error = bce + reg_param * np.linalg.norm(W)
+                mean_error = bce.sum() + reg_param * np.linalg.norm(W)
                 return -mean_error
 
         return objective, grad(objective)
