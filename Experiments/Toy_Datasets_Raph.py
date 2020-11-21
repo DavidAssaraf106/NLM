@@ -73,7 +73,7 @@ def create_two_circular_classes(n=1500, noise_input=0.05, plot=False):
 
 
 
-def create_three_circular_classes(k=2, n=5000, noise_input=0.02, plot=False):
+def create_three_circular_classes(n=5000, noise_input=0.02, plot=False):
     """
     INPUT:
     n/2 is the target number of points in each circle (note that this is a target)
