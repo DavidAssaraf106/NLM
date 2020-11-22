@@ -3,7 +3,7 @@ import autograd.numpy as np
 from sklearn import cluster, datasets
 # import matplotlib.pyplot as plt
 import warnings
-from Toy_Datasets_Raph import create_two_circular_classes, create_two_classes, create_three_classes, create_four_classes
+from Toy_Datasets_2D import create_two_circular_classes, create_two_classes, create_three_classes, create_four_classes
 
 warnings.filterwarnings('ignore')
 
