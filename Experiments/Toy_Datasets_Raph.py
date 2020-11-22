@@ -8,6 +8,9 @@ warnings.filterwarnings('ignore')
 
 
 
+######## Circular classes: concentric circles, with the boundary class as concentri cirlces ############
+
+
 def create_two_circular_classes(n=1500, noise_input=0.05, plot=False):
     """
     INPUT:
@@ -247,6 +250,10 @@ def create_four_circular_classes(n=5000, noise_input=0.02, plot=False):
     class4=[X_7,Y_7]
     
     return boundary, class1, class2, class3, class4
+
+
+
+############# Disks with boundary classes as circles around the disks ###################
 
 
 
