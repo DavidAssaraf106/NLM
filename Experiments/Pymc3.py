@@ -7,7 +7,7 @@ import pymc3 as pm
 import theano.tensor as T
 
 
-def pymc3_sampling(D, sigma_in, out_last_hidden_layer, output_dim, out_y):
+def pymc3_sampling(D=5, sigma_in=1, out_last_hidden_layer, output_dim=3, out_y):
 	"""
 	INPUTS:
 	D: dimension of the last hidden layer
