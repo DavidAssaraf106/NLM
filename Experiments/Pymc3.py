@@ -16,6 +16,7 @@ def pymc3_sampling(D, sigma_in, out_last_hidden_layer):
 	    w = pm.Normal('w', mu=0, sigma=sigma_in, shape=(D+1)) 
 	    linear_combi = pm.math.dot(X_subset,w)
 	    thetas = pm.Deterministic('theta', T.nnet.softmax(linear_combi))
+	    # or thetas = pm.Deterministic('theta', pm.math.softmax(linear_combi))?
 	    # Y commes from a Categorical(thetas)
 	    y_obs = pm.Categorical('y_obs', p=thetas, observed=out_last_hidden_layer)
 	    trace = pm.sample(5000,chains=2)
