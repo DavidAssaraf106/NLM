@@ -6,15 +6,26 @@ from pymc3 import Model
 import pymc3 as pm
 
 
-def pymc3_sampling():
+def pymc3_sampling(D, sigma_in, out):
+	"""
+	In
+	"""
 	with pm.Model() as replacing_HMC:  
-	    # w has a prior: N(0,10) TO CHANGE
-	    w = pm.Normal('w', mu=0, sigma=np.sqrt(10), shape=(D+1))
-	    # compute w_0 + w^TX 
-	    linear_combi = w[0] + pm.math.dot(X_subset, w[1:])
-	    theta = pm.Deterministic('theta', pm.math.sigmoid(linear_combi))
-	    # Y commes from a Bernouilli(theta)
-	    y_obs = pm.Bernoulli('y_obs', p=theta, observed=y_subset)
+	    # w has a prior: N(0,1) 
+	    w = pm.Normal('w', mu=0, sigma=sigma_in, shape=(D+1)) 
+	    linear_combi = pm.math.dot(X_subset,w)
+	    # TO CHECK SOFTMAX
+	    thetas = pm.Deterministic('theta', pm.math.softmax(linear_combi))
+	    # Y commes from a Categorical(theta)
+	    y_obs = pm.Categorical('y_obs', p=thetas, observed=y_subset)
 	    trace = pm.sample(5000,chains=2)
 	return trace
 
+
+
+
+
+###### A faire #############
+# tensorflow: tenosrflowprobability OU PytorchPyro 
+# Ou sinon: numpyro
+# Aussi faire BBVI, 
