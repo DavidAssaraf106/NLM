@@ -1,0 +1,194 @@
+\documentclass{article}
+
+% adjusting margin
+% \usepackage[a4paper, margin=1in]{geometry}
+
+% for the appendices
+\usepackage[toc, page]{appendix}
+
+
+
+
+% adjusting indentation and paragraph spacing
+\setlength\parindent{0pt}
+\setlength{\parskip}{0.4em}
+
+% formatting for abstract
+\newenvironment{vplace}[1][1]
+  {\par\vspace*{\stretch{#1}}}
+  {\vspace*{\stretch{1}}\par}
+\renewcommand{\abstractname}{{\scshape \Large \textmd{Abstract}}\\}
+
+% using natbib for references
+\usepackage[numbers]{natbib}
+\usepackage{url}
+
+\usepackage{yfonts}
+
+\usepackage{nccmath}
+\newenvironment{mpmatrix}{\begin{medsize}\begin{pmatrix}}%
+    {\end{pmatrix}\end{medsize}}%
+    
+\newcommand\myrule[1]{\multicolumn{1}{| l}{#1}}
+\newcommand\myrules[1]{\multicolumn{2}{| l}{#1}{| l}{#1}}
+
+
+\usepackage{blkarray}
+\usepackage{stackengine}
+\usepackage{bbding}
+\usepackage{calc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[export]{adjustbox}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage{relsize}
+\usepackage{multirow}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{bm}
+\usepackage{sidecap}
+\usepackage{ upgreek }
+\usepackage{xcolor} %% note colors
+\usepackage{graphicx}
+\usepackage{multicol}
+%\usepackage{pgfbaselayers}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{stmaryrd}
+\usepackage{palatino}
+\usepackage[utf8]{inputenc}
+\usepackage[breaklinks]{hyperref}
+\usepackage{aurical}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\newcommand\SmallMatrix[1]{{%
+\tiny\arraycolsep=0.3\arraycolsep\ensuremath{\begin{pmatrix}#1\end{pmatrix}}}}
+\renewcommand{\Pr}{\mbox{P}}
+\newcommand{\e}{\mbox{e}}
+\newcommand{\dx}{\,\mbox{d}x}
+
+%%%%% COMMANDS
+%\newcommand{\x}{\mathbf{x}}
+%\newcommand{\R}{\mathbb{R}}
+%\newcommand{\p}{\mathbf{p}}
+%\newcommand{\vp}{\mathbf{v}_\mathbf{p}}
+%\newcommand{\q}{\mathbf{q}}
+
+% formatting and numbering theorems etc.
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{axiom}[lemma]{Axiom}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{corollary}[lemma]{Corollary}
+\newtheorem{conjecture}[lemma]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[lemma]{Definition}
+
+
+\theoremstyle{definition}
+\newtheorem{examp}[lemma]{Example}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+%\theoremstyle{remark}
+%\newtheorem*{claim}{Claim}
+%\theoremstyle{remark}
+%\newtheorem*{proofofclaim}{Proof of claim}
+
+\setcounter{MaxMatrixCols}{20}
+
+% Peiran's custom commands
+\usepackage{enumitem}
+\newcommand{\htwonormalised}{\begin{pmatrix} + & + \\ + & - \end{pmatrix}}
+\newcommand{\GammaQuotient}{\Gamma/\langle u \rangle}
+\newcommand{\GammaRQuotient}{\Gamma_{\mbox{\small \textnormal{right}}}/\langle -I \rangle}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\Image}{Im}
+\DeclareMathOperator{\LT}{LT}
+\DeclareMathOperator{\LM}{LM}
+\DeclareMathOperator{\LC}{LC}
+\DeclareMathOperator{\lcm}{lcm}
+\DeclareMathOperator{\multideg}{multideg}
+\DeclareMathOperator{\Criterion}{Criterion}
+\DeclareMathOperator{\st}{s.t. }
+\DeclareMathOperator{\trace}{trace}
+\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\cut}{cut}
+
+%\newcommand{P}{P}
+%\newcommand{Q}{\mathbf{Q}}
+%\newcommand{H}{H}
+%\newcommand{I}{\mathbf{I}}
+\makeatletter
+\renewcommand*\env@matrix[1][c]{\hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{*\c@MaxMatrixCols #1}}
+\makeatother
+
+
+%for matlab code
+\usepackage{listings}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+
+\lstset{language=Matlab,%
+    %basicstyle=\color{red},
+    breaklines=true,%
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},%
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},%
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},%
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=left,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
+}
+
+% metadata
+
+
+
+
+\begin{document}
+\textbf{Rapha\"el Pellegrin, Gael Ancel, David Assaraf - 23/11/20\\
+\begin{center}
+Normalizing flows: an introduction and review of current methods \end{center}}
+\medskip
+
+Normalizing flows are a family of generative models. It is a transfomration of a simple probability distribution into a more complicated one via a series of invertible and differentiable maps. We can evaluate the density of a sample from the complex distribution by looking at the density of its pre-image in the simple distribution, multiplied by the appropriate change in volume induced by the transformations: this is given by the aboslute values of the determinant of the Jacobians of each transformation.
+
+Standard applications of normalizing flows include density estimation and prior construction, but th eone that interests us in is oulier detection.
+
+Let $Z \in \mathbb{R}^D$ be a random variable with probability density function (pdf):
+$$p_Z:  \mathbb{R}^D \rightarrow \mathbb{R}$$ 
+Then, for an invertible function $g$, we can let $Y:=g(Z)$.
+
+We then have:
+
+\begin{align} F_Y(y)&= P(Y\leq y)  \\
+&=P(g(Z)\leq y)\\
+&=P(Z \leq g^{-1}(y))\\
+&=F_Z(g^{-1}(y)) \end{align}
+
+Thus:
+
+\begin{align} p_Y(y)=p_Z(g^{-1}(y))|det Df(y)| \end{align}
+
+
+
+
+
+
+
+\end{document}
+

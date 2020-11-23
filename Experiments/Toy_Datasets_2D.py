@@ -567,7 +567,7 @@ def two_moon(n = 1500, noise_input=.01, plot=False):
     poly24 = lagrange(x24, y24)
 
     x_ax11=np.linspace(-1.1,1.1,1000)
-    y_ax11=poly(x_ax11)
+    y_ax11=poly11(x_ax11)
     x_ax12=np.linspace(-0.9,0.9,1000)
     y_ax12=poly12(x_ax12)
     x_ax13=np.linspace(-1.1,-0.9,100)
