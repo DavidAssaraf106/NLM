@@ -635,7 +635,7 @@ def four_moon(n = 1500, noise_input=.01, plot=False, matrix=[[1,0],[0,1]],transl
     """
     n_call=n
     noise_call=noise_input
-    boundary_i,class1_i,class2_i=moon(n=n_call, noise_input= noise_call)
+    boundary_i,class1_i,class2_i=two_moon(n=n_call, noise_input= noise_call)
     for i in range(len(boundary_i[0])):
         x=boundary_i[0][i]
         y=boundary_i[1][i]
@@ -698,7 +698,7 @@ def six_moon(n = 1500, noise_input=.01, plot=False, matrix1=[[1,0],[0,1]],transl
     """
     n_call=n
     noise_call=noise_input
-    boundary_i,class1_i,class2_i=moon(n=n_call, noise_input= noise_call)
+    boundary_i,class1_i,class2_i=two_moon(n=n_call, noise_input= noise_call)
     for i in range(len(boundary_i[0])):
         x=boundary_i[0][i]
         y=boundary_i[1][i]
