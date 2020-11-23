@@ -165,13 +165,15 @@
 Normalizing flows: an introduction and review of current methods \end{center}}
 \medskip
 
-Normalizing flows are a family of generative models. It is a transfomration of a simple probability distribution into a more complicated one via a series of invertible and differentiable maps. We can evaluate the density of a sample from the complex distribution by looking at the density of its pre-image in the simple distribution, multiplied by the appropriate change in volume induced by the transformations: this is given by the aboslute values of the determinant of the Jacobians of each transformation.
+\section{Introduction}
+
+Normalizing flows are a family of generative models. It is a transfomration of a simple probability distribution into a more complicated one via a series of diffeomorphism. We can evaluate the density of a sample from the complex distribution by looking at the density of its pre-image in the simple distribution, multiplied by the appropriate change in volume induced by the transformations: this is given by the aboslute values of the determinant of the Jacobians of each transformation.
 
 Standard applications of normalizing flows include density estimation and prior construction, but th eone that interests us in is oulier detection.
 
 Let $Z \in \mathbb{R}^D$ be a random variable with probability density function (pdf):
 $$p_Z:  \mathbb{R}^D \rightarrow \mathbb{R}$$ 
-Then, for an invertible function $g$, we can let $Y:=g(Z)$.
+Then, for a diffeomorphism $g$, we can let $Y:=g(Z)$.
 
 We then have:
 
@@ -183,6 +185,30 @@ We then have:
 Thus:
 
 \begin{align} p_Y(y)=p_Z(g^{-1}(y))|det Df(y)| \end{align}
+
+where $f:=g^{-1}$. 
+
+\begin{definition} $p_Y(y)$ is called the pushforward of the density $p_Z(z)$. $Z$ is called the base distribution, and the movement from $Z$ to $Y$ is called the generative direction. The inverse of $g$, $f$, moves in the normalizing direction. This explains the name normalizing direction.
+\end{definition}
+
+In practice, we choose the diffeomorphism with a neural network (Papamakarios et al.)
+
+\section{Type of flows}
+
+There a different types of flows: the kinds discussed in the paper are elementwise flows, linear flows, planar and radial flows, coupling and autoregressive flows, residual flows, infinitesimal (continuous flows).
+
+Element wise flows use a bijection $h: \mathbb{R} \rightarrow \mathbb{R}$ to construct the bijection $g: \mathbb{R}^D \rightarrow \mathbb{R}^D$:
+
+$$ g((x_1, \dots, x_D)^T) \mapsto (h(x_1), \dots, h(x_D))^T $$
+
+Linear flows correspond to a function $g: \mathbb{R}^D \rightarrow \mathbb{R}^D$ such that:
+
+$$ g(x)=Ax+b$$
+where $A \in \mathbb{R}^{D\times D}$ and $b \in \mathbb{R}^{D}$.
+
+\subsection{Coupling flows}
+
+The most used flows are coupling and autoregressive flows.
 
 
 
