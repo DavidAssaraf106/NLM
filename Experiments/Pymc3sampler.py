@@ -8,7 +8,7 @@ import theano.tensor as T
 
 
 
-def pymc3_sampling(D, mu_wanted=0, tau_wanted=1, out_last_hidden_layer, output_dim, out_y, samples_wanted=1000, number_chains=2):
+def pymc3_sampling(out_last_hidden_layer, output_dim, out_y, D, mu_wanted=0, tau_wanted=1, samples_wanted=1000, number_chains=2):
     """
     INPUTS:
     D: dimension of the last hidden layer
@@ -33,6 +33,21 @@ def pymc3_sampling(D, mu_wanted=0, tau_wanted=1, out_last_hidden_layer, output_d
     return trace
 
 
+def plot_trace(traces, weight_number=1, thin_wanted=3, burn_wanted=0.2, colour='b'):
+	burn_in=burn_wanted
+	thinning_factor=thin_wanted
+
+
+
+	w=[]
+	for i in range(len(traces['w'])):    
+	    w.append(traces['w'][i][weight_number])
+
+	wp = w[int(burn_in*len(traces)):][::thinning_factor]        
+	    
+	fig, ax=plt.subplots(1,1,figsize=(20,5))
+	ax.plot(range(len(wp)), wp, color=colour)
+	ax.set_title('Trace plot for weight {}'.format(weight_number))
 
 
 
