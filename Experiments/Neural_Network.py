@@ -5,10 +5,20 @@ from autograd import grad
 from autograd.misc.optimizers import adam
 from Bayesian_pdf import get_log_prior, get_log_likelihood
 from Hamiltonian_MC import hmc
+from scipy.special import softmax as sftmax
+import autograd.numpy as np
+import matplotlib.pyplot as plt
+import warnings
+from pymc3 import Model
+import pymc3 as pm
+import theano.tensor as T
+
+
 
 
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
+
 
 def softmax(y):  # checked, ok for softmax and the dimensions
     """
@@ -147,7 +157,7 @@ class NLM:
 
         return objective, grad(objective)
 
-    # todo: check that y is one-hot encoded in the training phase
+
     def fit_MLE(self, x_train, y_train, params, reg_param=None):
 
         assert x_train.shape[0] == self.params['D_in']
@@ -203,16 +213,61 @@ class NLM:
                 opt_index = np.argmin(self.objective_trace[-100:])
                 self.weights = self.weight_trace[-100:][opt_index].reshape((1, -1))
             weights_init = self.random.normal(0, 1, size=(1, self.D))
-
-
-
-
         self.objective_trace = self.objective_trace[1:]
         self.weight_trace = self.weight_trace[1:]
 
 
+    def get_feature_map_weights(self):  # convention: weights1, bias 1, weights 2, bias 2, weights3 bias 3
+        """This function returns the weight of the last hidden layer. Those are the weights we will use in order
+        to initialize the MCMC sampler for our posterior. The structure we decided in the pymc3 sampling is that
+        the weights should be ordered as [(weights class i, bias class i) for i <= k] where k = num_classes.
+        The actual ordering we defined in the forward mode was [weights class i for i <=k] + [bias class i for i <= k]
+        for every layer. Therefore, we need to reshape our weights here.
+        NOTE: works for achitecture with > 1 hidden layer
+        """
+        index_output_layer = - self.params['H']*self.params['D_out'] - self.params['D_out']
+        weights_concerned = self.weights.flatten()[index_output_layer - (self.params['H']+1)*self.params['H']:index_output_layer]
+        weights_reshape = []
+        for d in range(self.params['H']):
+            weights_node_d = list(weights_concerned[d*self.params['H']:(d+1)*self.params['H']])
+            bias_node_d = weights_concerned[self.params['H']*self.params['H']+d]
+            weights_node_d.append(bias_node_d)
+            weights_reshape.append(weights_node_d)
+        return np.array(weights_reshape).flatten()
 
-    def fit_NLM(self, x_train, y_train, hmc, params_hmc):
+
+
+    def pymc3_sampling(self, out_last_hidden_layer, output_dim, y, D, mu_wanted=0, tau_wanted=1, samples_wanted=1000,
+                       number_chains=2):
+        """
+        :param out_last_hidden_layer: the feature map after the trained Neural network
+        :param output_dim: the output dimension (= number of classes)
+        :param y: your training labels
+        :param D: the number of hidden nodes (is also the dimensionnality of the output of the feature map)
+        :param mu_wanted: mu of the normal prior
+        :param tau_wanted: precision of the normal prior
+        :param samples_wanted: number of samples generated
+        :param number_chains: number of chains ran
+        :return: samples from the posterior of the Bayesian Logistic regression
+        """
+        initialization_pymc3 = self.get_feature_map_weights()
+        with pm.Model() as replacing_HMC:
+            # w has a prior: N(0,1)
+            # Output dim number of bias
+            w = pm.Normal('w', mu=mu_wanted, tau=tau_wanted, shape=(D * output_dim + output_dim))
+            linear_combinations = []
+            for j in range(output_dim):
+                dot = pm.math.dot(out_last_hidden_layer[0].T, w[j * D:j * D + D]) + w[-j]
+                linear_combi = pm.Deterministic('s' + str(j), dot)
+                linear_combinations.append(linear_combi)
+            thetas = pm.Deterministic('theta', T.nnet.softmax(linear_combinations))
+            # Y comes from a Categorical(thetas)
+            y_obs = pm.Categorical('y_obs', p=thetas, observed=y)
+            trace = pm.sample(samples_wanted, chains=number_chains, start=initialization_pymc3)
+        return trace
+
+
+    def fit_NLM(self, x_train, y_train):
         """
         :param self: a Neural Network that has been fitted via MLE. Also, the params of the NN should contain a key
         'prior' and a key 'likelihood'
@@ -226,27 +281,18 @@ class NLM:
         - init: The initial position of the HMC
         - burn: Burn-in parameter
         - thin: Thinning factor
-        :return: Samples from the posterior distribution.
+        :return: Samples from the posterior distribution sampled via the NUTS pymc3.
         """
         D = self.params['H']  # dimensionality of the feature map
-        log_prior = get_log_prior(self.params['prior_distribution'], self.params['prior_parameters'], D)
-        log_likelihood = get_log_likelihood(self.params['likelihood_distribution'], self.params['likelihood_parameters'], self, x_train, y_train, D) #we are supposed to take the output of the last layer
-        samples = hmc(log_prior, log_likelihood, **params_hmc)
+        samples = self.pymc3_sampling(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train, D)
         return samples
 
 
-    def get_feature_map_weights(self):
-        """This function returns the weight of the last hidden layer. Those are the weights we will put
-        our prior on in the NLM.
-        """
-        return self.weights.flatten()[-self.params['D_out']-self.params['H']:-self.params['D_out']].reshape(1, -1)
-
-
-    def sample(self, x_train, y_train, hmc, params_fit, params_hmc):
+    def sample(self, x_train, y_train, params_fit):
         self.fit_MLE(x_train, y_train, params_fit)
-        params_hmc['init'] = self.get_feature_map_weights()
-        samples = self.fit_NLM(x_train, y_train, hmc, params_hmc)
+        samples = self.fit_NLM(x_train, y_train)
         return samples
+
 
 
 class Classifier:

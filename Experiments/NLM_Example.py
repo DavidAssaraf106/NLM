@@ -12,9 +12,9 @@ from Hamiltonian_MC import hmc
 # import matplotlib.pyplot as plt
 from Bayesian_pdf import get_log_prior, get_log_likelihood
 from sklearn.linear_model import LogisticRegression
+
+
 # import tensorflow as tf
-
-
 
 
 def fit_MLE_0(X, y, architecture, threshold_classification, params, random=0, exigence=True):
@@ -29,11 +29,13 @@ def fit_MLE_0(X, y, architecture, threshold_classification, params, random=0, ex
     :return:
     """
     nlm = NLM(architecture)
+    y = get_dummies(y).values
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=random)
-    nlm.fit_MLE(X_train.T, y_train.reshape(1, -1), params)
+    nlm.fit_MLE(X_train.T, y_train.T, params)
     classifier = Classifier(nlm.weights, nlm.forward)
     y_pred_test = classifier.predict(X_test)
-    accuracy = accuracy_score(y_true=y_test, y_pred=y_pred_test.flatten())
+    print(np.mean(np.sum(y_pred_test == y_test, axis=1) == 3))
+    accuracy = np.mean(np.sum(y_pred_test == y_test, axis=1) == 3)
     print(accuracy)
     if exigence:
         assert accuracy > threshold_classification, "The MLE of the model does not seem to have converged"
@@ -48,14 +50,15 @@ def fit_MLE_1(max_iteration, n_samples, exigence=False):
     """
     params_1 = {'mean': [1, 1], 'covariance_matrix': 0.5 * np.eye(2)}
     params_2 = {'mean': [-1, -1], 'covariance_matrix': 0.5 * np.eye(2)}
-    params = [params_1, params_2]
+    params_3 = {'mean': [-1, 1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params = [params_1, params_2, params_3]
     X, y = two_clusters_gaussian(params, n_samples)
     activation_fn_type = 'relu'
     activation_fn = lambda x: np.maximum(np.zeros(x.shape), x)
     width = 5
-    hidden_layers = 1
+    hidden_layers = 2
     input_dim = 2
-    output_dim = 1
+    output_dim = 3
     architecture = {'width': width,
                     'hidden_layers': hidden_layers,
                     'input_dim': input_dim,
@@ -145,7 +148,6 @@ def softmax_in_NN_2(max_iteration):
     print(accuracy)
 
 
-
 def softmax_in_NN_3(max_iteration):
     """
     This function tests the validity of the forward pass + the softmax output when trained on K >=2 classes. It also tests the dimension of the output.
@@ -181,7 +183,6 @@ def softmax_in_NN_3(max_iteration):
     y_pred_test = classifier.predict(X_test)
     accuracy = accuracy_score(y_true=y_test, y_pred=y_pred_test)
     return accuracy
-
 
 
 def softmax(y):  # checked, ok for softmax and the dimensions
@@ -283,12 +284,8 @@ def test_decision_boundary(max_iteration):
     plt.show()
 
 
-
-
-
 def sigmoid(z):
     return 1. / (1. + np.exp(-z))
-
 
 
 def HMC_Unit_test():
@@ -299,18 +296,18 @@ def HMC_Unit_test():
     x = np.vstack((class_0, class_1))
     y = np.array([0] * 100 + [1] * 100)
     mean = np.zeros(3)
-    cov = 10*np.eye(3)
+    cov = 10 * np.eye(3)
     D = 3
 
     def log_likelihood(w):
         theta = sigmoid(w[0] + np.dot(x, w[1:]))
-        theta = np.clip(theta, 1e-15, 1-1e-15)
+        theta = np.clip(theta, 1e-15, 1 - 1e-15)
         loglkhd = y * np.log(theta) + (1 - y) * np.log(1 - theta)
         return np.sum(loglkhd)
 
     def log_normal_prior(W):
         logprior = -0.5 * (np.log(np.linalg.det(cov)) + D * np.log(2 * np.pi))
-        logprior += -0.5 * np.dot(np.dot(W-mean, np.linalg.inv(cov)), (W-mean).T)
+        logprior += -0.5 * np.dot(np.dot(W - mean, np.linalg.inv(cov)), (W - mean).T)
         return logprior
 
     log_prior = log_normal_prior
@@ -319,10 +316,38 @@ def HMC_Unit_test():
     lr.fit(x, y)
     position_init = np.hstack((lr.coef_.flatten(), lr.intercept_))
     position_init = position_init.reshape((1, 3))[0]
-    samples = hmc(log_prior, log_likelihood, 1000,  1e-3, 20, position_init, 0.1, 1)
+    samples = hmc(log_prior, log_likelihood, 1000, 1e-3, 20, position_init, 0.1, 1)
 
 
-
+def NLM_test():
+    params_1 = {'mean': [1, 1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params_2 = {'mean': [-1, -1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params_3 = {'mean': [-1, 1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params = [params_1, params_2, params_3]
+    X, y = two_clusters_gaussian(params, 100)
+    activation_fn_type = 'relu'
+    activation_fn = lambda x: np.maximum(np.zeros(x.shape), x)
+    width = 5
+    hidden_layers = 2
+    input_dim = 2
+    output_dim = 3
+    architecture = {'width': width,
+                    'hidden_layers': hidden_layers,
+                    'input_dim': input_dim,
+                    'output_dim': output_dim,
+                    'activation_fn_type': 'relu',
+                    'activation_fn_params': 'rate=1',
+                    'activation_fn': activation_fn}
+    rand_state = 0
+    random = np.random.RandomState(rand_state)
+    params = {'step_size': 1e-3,
+              'max_iteration': 2000,
+              'random_restarts': 1}
+    nlm = NLM(architecture)
+    y = get_dummies(y).values
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=random)
+    nlm.fit_MLE(X_train.T, y_train.T, params)
+    nlm.fit_NLM(X_train.T, y_train.T)
 
 if __name__ == '__main__':
-    HMC_Unit_test()
+    NLM_test()

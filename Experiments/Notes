@@ -1,0 +1,8 @@
+# Quick Notes on the approach: 
+
+## About Epistemic Uncertainty
+    Q1: Why computing epistemic uncertainty this way ? (variance over the different predicted probabilities)
+    Alternative: See the probabilities output by our model, and maybe this is a way of quantifying the confidence with 
+    which our model predicts the class of an input. 
+    Proposed Answer: Computing the uncertainty this way allows to differentiate the epistemic uncertainty 
+    from the aleatoric uncertainty. 
