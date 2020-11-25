@@ -18,4 +18,5 @@
 ## About pymc3
     - pymc3 and matplotlib are not compatible. We need to separate their use in different files. 
     What we could do is save a MCMC sample on a text file and then use it afterwards for decision.
-     
+    - From the MCMC convergence best practices, we should run multilple chains initialized from very different random starting points
+    However, we initialize the NUTS sampler to our MLE for the weights, is it a good practice ? 

@@ -11,7 +11,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def uncertainty_test(test_points, models, printing=False)
+def uncertainty_test(test_points, models, printing=False):
     """
     Gives the epistemic uncertainty of points in test_points
 
@@ -36,7 +36,7 @@ def uncertainty_test(test_points, models, printing=False)
         for i in range(len(epistemic_uncer)):
             print('Test point: {}'.format(test_points[i]))
             print('The epistemic uncertainty for test point: {} is {}'.format(test_points[i], epistemic_uncer[i]))
-    return espistemic_uncer
+    return epistemic_uncer
 
 
 
