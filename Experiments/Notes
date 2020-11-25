@@ -6,3 +6,16 @@
     which our model predicts the class of an input. 
     Proposed Answer: Computing the uncertainty this way allows to differentiate the epistemic uncertainty 
     from the aleatoric uncertainty. 
+
+## About the general approach
+    Q1: Why do we try to detect OOD points this way? 
+    Alternative: Use GANs or VAEs in order to learn a generative model for the distribution
+    and then be able to detect OOD points from our generative model
+    Proposed Answer: For GANs, the training seems complicated. + what will happen with the OOD 
+    points ? Still unclear how we would encode the variety of different models that come from the posterior
+    distribution.  
+    
+## About pymc3
+    - pymc3 and matplotlib are not compatible. We need to separate their use in different files. 
+    What we could do is save a MCMC sample on a text file and then use it afterwards for decision.
+     

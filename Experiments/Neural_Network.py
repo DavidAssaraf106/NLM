@@ -7,11 +7,12 @@ from Bayesian_pdf import get_log_prior, get_log_likelihood
 from Hamiltonian_MC import hmc
 from scipy.special import softmax as sftmax
 import autograd.numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import warnings
 from pymc3 import Model
 import pymc3 as pm
 import theano.tensor as T
+import random
 
 
 
@@ -226,11 +227,11 @@ class NLM:
         NOTE: works for achitecture with > 1 hidden layer
         """
         index_output_layer = - self.params['H']*self.params['D_out'] - self.params['D_out']
-        weights_concerned = self.weights.flatten()[index_output_layer - (self.params['H']+1)*self.params['H']:index_output_layer]
+        weights_concerned = self.weights.flatten()[index_output_layer:]
         weights_reshape = []
-        for d in range(self.params['H']):
+        for d in range(self.params['D_out']):
             weights_node_d = list(weights_concerned[d*self.params['H']:(d+1)*self.params['H']])
-            bias_node_d = weights_concerned[self.params['H']*self.params['H']+d]
+            bias_node_d = weights_concerned[self.params['H']*self.params['D_out']+d]
             weights_node_d.append(bias_node_d)
             weights_reshape.append(weights_node_d)
         return np.array(weights_reshape).flatten()
@@ -252,18 +253,15 @@ class NLM:
         """
         initialization_pymc3 = self.get_feature_map_weights()
         with pm.Model() as replacing_HMC:
-            # w has a prior: N(0,1)
-            # Output dim number of bias
-            w = pm.Normal('w', mu=mu_wanted, tau=tau_wanted, shape=(D * output_dim + output_dim))
+            w = pm.Normal('w', mu=initialization_pymc3, tau=tau_wanted, shape=(D * output_dim + output_dim))
             linear_combinations = []
             for j in range(output_dim):
-                dot = pm.math.dot(out_last_hidden_layer[0].T, w[j * D:j * D + D]) + w[-j]
+                dot = pm.math.dot(out_last_hidden_layer[0].T, w[j * D:j * D + D]) + w[-j]  # wrong, this is not j
                 linear_combi = pm.Deterministic('s' + str(j), dot)
                 linear_combinations.append(linear_combi)
             thetas = pm.Deterministic('theta', T.nnet.softmax(linear_combinations))
-            # Y comes from a Categorical(thetas)
-            y_obs = pm.Categorical('y_obs', p=thetas, observed=y)
-            trace = pm.sample(samples_wanted, chains=number_chains, start=initialization_pymc3)
+            y_obs = pm.Categorical('y_obs', p=thetas.T, observed=y)
+            trace = pm.sample(samples_wanted, chains=number_chains)
         return trace
 
 
@@ -285,13 +283,31 @@ class NLM:
         """
         D = self.params['H']  # dimensionality of the feature map
         samples = self.pymc3_sampling(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train, D)
-        return samples
+        return samples['w']
 
 
-    def sample(self, x_train, y_train, params_fit):
+    def sample_posterior(self, x_train, y_train, params_fit):
+        print('Currently fitting a Neural Network for the Classification task')
         self.fit_MLE(x_train, y_train, params_fit)
+        print('NN trained ! Now, thanks to the feature map, we are going to sample the posterior weights')
         samples = self.fit_NLM(x_train, y_train)
         return samples
+
+
+    def sample_models(self, x_train, y_train, params_fit, num_models):
+        posterior_weights = np.array(self.sample_posterior(x_train, y_train, params_fit))  # size : (num_weights, num_samples)
+        indexes_chosen = random.choices(posterior_weights.shape[1], k=num_models)
+        selected_weights = posterior_weights[:, indexes_chosen]  # size : (num_weights, num_models)
+        # one thing we need to solve about the weights is that this is not the right shape, we expect weights + biases and
+        # what we are doing rn is
+        index_output_layer = - self.params['H'] * self.params['D_out'] - self.params['D_out']
+        weights_independent = self.weights[:index_output_layer]
+        models = []
+        for weight in selected_weights:
+            complete_weight_model = np.array(list(weights_independent) + list(weight))
+
+
+
 
 
 

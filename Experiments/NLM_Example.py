@@ -9,7 +9,7 @@ from Toy_Datasets import two_clusters_gaussian, plot_decision_boundary
 import autograd.numpy as np
 from pandas import get_dummies
 from Hamiltonian_MC import hmc
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from Bayesian_pdf import get_log_prior, get_log_likelihood
 from sklearn.linear_model import LogisticRegression
 
@@ -347,7 +347,21 @@ def NLM_test():
     y = get_dummies(y).values
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=random)
     nlm.fit_MLE(X_train.T, y_train.T, params)
-    nlm.fit_NLM(X_train.T, y_train.T)
+    samples = nlm.fit_NLM(X_train.T, y_train.T)
+    return samples
+
 
 if __name__ == '__main__':
-    NLM_test()
+    samples = NLM_test()
+    fig, ax = plt.subplots(1, figsize=(20, 10))
+    burn_in = 0.2
+    thinning_factor = 3
+    print(samples['w'])
+    w = []
+    for i in range(len(samples['w'])):
+        w.append(samples['w'][i][1])
+    wp = w[int(burn_in * len(samples)):][::thinning_factor]
+    fig, ax = plt.subplots(1, 1, figsize=(20, 5))
+    ax.plot(range(len(wp)), wp)
+    plt.show()
+
