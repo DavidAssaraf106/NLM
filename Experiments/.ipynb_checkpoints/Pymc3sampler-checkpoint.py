@@ -29,7 +29,7 @@ def pymc3_sampling(out_last_hidden_layer, output_dim, out_y, D, mu_wanted=0, tau
             linear_combinations.append(linear_combi)
         thetas = pm.Deterministic('theta', T.nnet.softmax(linear_combinations))
         # Y commes from a Categorical(thetas)
-        y_obs = pm.Categorical('y_obs', p=thetas.T, observed=out_y)
+        y_obs = pm.Bernoulli('y_obs', p=thetas, observed=out_y)
         trace = pm.sample(samples_wanted,chains=number_chains)
     return trace
 
