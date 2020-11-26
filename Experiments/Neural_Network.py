@@ -213,19 +213,13 @@ class NLM:
         to initialize the MCMC sampler for our posterior. The structure we decided in the pymc3 sampling is that
         the weights should be ordered as [(weights class i, bias class i) for i <= k] where k = num_classes.
         The actual ordering we defined in the forward mode was [weights class i for i <=k] + [bias class i for i <= k]
-        for every layer. Therefore, we need to reshape our weights here.
+        for every layer. Therefore, we need to reshape our weights here. Wrong, WW does the same, all weights and
+        all biases.
         NOTE: works for achitecture with > 1 hidden layer
         """
-        # todo: make sure we agree on this point
         index_output_layer = - self.params['H'] * self.params['D_out'] - self.params['D_out']
         weights_concerned = self.weights.flatten()[index_output_layer:]
-        weights_reshape = []
-        for d in range(self.params['D_out']):
-            weights_node_d = list(weights_concerned[d * self.params['H']:(d + 1) * self.params['H']])
-            bias_node_d = weights_concerned[self.params['H'] * self.params['D_out'] + d]
-            weights_node_d.append(bias_node_d)
-            weights_reshape.append(weights_node_d)
-        return np.array(weights_reshape).flatten()
+        return weights_concerned.flatten()
 
 
     def pymc3_sampling(self, out_last_hidden_layer, output_dim, y, D, mu_wanted=0, tau_wanted=1, samples_wanted=1000,
@@ -242,12 +236,11 @@ class NLM:
         :return: samples from the posterior of the Bayesian Logistic regression
         """
         initialization_pymc3 = self.get_feature_map_weights()
-        # todo: fix the way we use the weights inside this function
         with pm.Model() as replacing_HMC:
             w = pm.Normal('w', mu=initialization_pymc3, tau=tau_wanted, shape=(D * output_dim + output_dim))
             linear_combinations = []
             for j in range(output_dim):
-                dot = pm.math.dot(out_last_hidden_layer[0].T, w[j * D:j * D + D]) + w[-j]  # wrong, this is not j
+                dot = pm.math.dot(out_last_hidden_layer[0].T, w[j * D:j * D + D]) + w[-output_dim+j]
                 linear_combi = pm.Deterministic('s' + str(j), dot)
                 linear_combinations.append(linear_combi)
             thetas = pm.Deterministic('theta', T.nnet.softmax(linear_combinations))
@@ -273,8 +266,7 @@ class NLM:
         :return: Samples from the posterior distribution sampled via the NUTS pymc3.
         """
         D = self.params['H']  # dimensionality of the feature map
-        samples = self.pymc3_sampling(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train,
-                                      D)
+        samples = self.pymc3_sampling(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train, D)
         return samples['w']
 
 
@@ -295,7 +287,6 @@ class NLM:
         indexes_chosen = random.choices(posterior_weights.shape[1], k=num_models)
         selected_weights = posterior_weights[:, indexes_chosen]  # size : (num_weights, num_models)
         # one thing we need to solve about the weights is that this is not the right shape, we expect weights + biases and
-        # todo: fix the way we add the weights, if it's okay with the shape
         index_output_layer = - self.params['H'] * self.params['D_out'] - self.params['D_out']
         weights_independent = self.weights[:index_output_layer]
         models = []

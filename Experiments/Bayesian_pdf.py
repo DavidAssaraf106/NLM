@@ -41,7 +41,7 @@ def log_logistic_likelihood(params, nlm, X, y):
         mapped_X = nlm.forward(W, X, partial=True)  # feature map of the inputs (output of the last hdl), dimension (1,D,num_dots)
         # ---> W=W[-18:].reshape(3,-1)
         # transform mapped_X: shape[0]=5 --> shape[0]=3
-        dot_product = np.dot(W, mapped_X) # !!! dimension problem: D_weights ≠ (1,D,num_dots)
+        dot_product = np.dot(W, mapped_X)  # !!! dimension problem: D_weights ≠ (1,D,num_dots)
         theta = sigmoid(dot_product)
         theta = np.clip(theta, 1e-15, 1 - 1e-15)
         loglkhd = y * np.log(theta) + (1 - y) * np.log(1 - theta)
