@@ -237,7 +237,7 @@ class NLM:
         """
         initialization_pymc3 = self.get_feature_map_weights()
         with pm.Model() as replacing_HMC:
-            w = pm.Normal('w', mu=initialization_pymc3, tau=tau_wanted, shape=(D * output_dim + output_dim))
+            w = pm.Normal('w', mu=0, tau=tau_wanted, shape=(D * output_dim + output_dim))
             linear_combinations = []
             for j in range(output_dim):
                 dot = pm.math.dot(out_last_hidden_layer[0].T, w[j * D:j * D + D]) + w[-output_dim+j]
