@@ -291,8 +291,8 @@ class NLM:
         posterior_weights = np.array(
             self.sample_posterior(x_train, y_train, params_fit, mac))  # size : (num_weights, num_samples)
         print('Now, thanks to the posterior, we are going to create ' + str(
-            num_models) + 'different classification models')
-        indexes_chosen = random.choices(posterior_weights.shape[0], k=num_models)
+            num_models) + ' different classification models')
+        indexes_chosen = random.choices(range(posterior_weights.shape[0]), k=num_models)
         selected_weights = posterior_weights[indexes_chosen,:]  # size : (num_weights, num_models)
         # one thing we need to solve about the weights is that this is not the right shape, we expect weights + biases and
         index_output_layer = - self.params['H'] * self.params['D_out'] - self.params['D_out']
