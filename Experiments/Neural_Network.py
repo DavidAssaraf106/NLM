@@ -273,7 +273,7 @@ class NLM:
         :return: Samples from the posterior distribution sampled via the NUTS pymc3.
         """
         D = self.params['H']  # dimensionality of the feature map
-        samples = self.pymc3_sampling(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train, D, mac=False)
+        samples = self.pymc3_sampling(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train, D, mac)
         return samples['w']
 
 
