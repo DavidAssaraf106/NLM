@@ -257,7 +257,7 @@ def create_four_circular_classes(n=5000, noise_input=0.02, plot=False):
 ######## Circular classes with only the outer boundary: concentric circles, with the boundary class as the outer circle ############
 
 
-def create_two_circular_classes_outer(n=1500, noise_input=0.05, plot=False):
+def create_two_circular_classes_outer(n=1500, noise_input=0.05, plot=False, distance=1):
     """
     INPUT:
     n is the target number of points in each circle (note that this is a target)
@@ -298,8 +298,8 @@ def create_two_circular_classes_outer(n=1500, noise_input=0.05, plot=False):
     for i in range(len(noisy_circles_4[0])):
         # make_circles creates two circles, we only want to create one
         if (noisy_circles_4[0][i][0]) ** 2 + noisy_circles_4[0][i][1] ** 2 < .7:
-            X_4.append(noisy_circles_4[0][i][0])
-            Y_4.append(noisy_circles_4[0][i][1])
+            X_4.append(distance*noisy_circles_4[0][i][0])
+            Y_4.append(distance*noisy_circles_4[0][i][1])
 
     if plot:
         plt.plot(X_1, Y_1, 'x', c='r')
@@ -315,7 +315,7 @@ def create_two_circular_classes_outer(n=1500, noise_input=0.05, plot=False):
 
 
 
-def create_three_circular_classes_outer(n=5000, noise_input=0.02, plot=False):
+def create_three_circular_classes_outer(n=5000, noise_input=0.02, plot=False, distance=1):
     """
     INPUT:
     n/2 is the target number of points in each circle (note that this is a target)
@@ -361,8 +361,8 @@ def create_three_circular_classes_outer(n=5000, noise_input=0.02, plot=False):
     X_6=[]
     Y_6=[]
     for i in range(len(X_3)):
-        X_6.append(X_3[i]*2.5)
-        Y_6.append(Y_3[i]*2.5)
+        X_6.append(distance*X_3[i]*2.5)
+        Y_6.append(distance*Y_3[i]*2.5)
             
     if plot:
         plt.plot(X_1,Y_1,'x',c='r')
@@ -380,7 +380,7 @@ def create_three_circular_classes_outer(n=5000, noise_input=0.02, plot=False):
 
 
 
-def create_four_circular_classes_outer(n=5000, noise_input=0.02, plot=False):
+def create_four_circular_classes_outer(n=5000, noise_input=0.02, plot=False, distance=1):
     """
     INPUT:
     n/2 is the target number of points in each circle (note that this is a target)
@@ -433,8 +433,8 @@ def create_four_circular_classes_outer(n=5000, noise_input=0.02, plot=False):
     X_8=[]
     Y_8=[]
     for i in range(len(X_3)):
-        X_8.append(X_3[i]*3.9)
-        Y_8.append(Y_3[i]*3.9)
+        X_8.append(distance*X_3[i]*3.9)
+        Y_8.append(distance*Y_3[i]*3.9)
             
     if plot:
         plt.plot(X_1,Y_1,'x',c='r')
@@ -458,7 +458,7 @@ def create_four_circular_classes_outer(n=5000, noise_input=0.02, plot=False):
 ######## Circular classes with only an imperfect outer boundary: concentric circles, with the boundary class as the outer circle ############
 
 
-def create_two_circular_classes_outerimperfect(n=1500, noise_input=0.05, plot=False, gap=0.2):
+def create_two_circular_classes_outerimperfect(n=1500, noise_input=0.05, plot=False, gap=0.2, distance=1):
     """
     INPUT:
     n is the target number of points in each circle (note that this is a target)
@@ -500,8 +500,8 @@ def create_two_circular_classes_outerimperfect(n=1500, noise_input=0.05, plot=Fa
         # make_circles creates two circles, we only want to create one
         if (noisy_circles_4[0][i][0]) ** 2 + noisy_circles_4[0][i][1] ** 2 < .7:
             if np.abs(noisy_circles_4[0][i][0])>gap:
-                X_4.append(noisy_circles_4[0][i][0])
-                Y_4.append(noisy_circles_4[0][i][1])
+                X_4.append(distance*noisy_circles_4[0][i][0])
+                Y_4.append(distance*noisy_circles_4[0][i][1])
 
     if plot:
         plt.plot(X_1, Y_1, 'x', c='r')
@@ -517,7 +517,7 @@ def create_two_circular_classes_outerimperfect(n=1500, noise_input=0.05, plot=Fa
 
 
 
-def create_three_circular_classes_outerimperfect(n=5000, noise_input=0.02, plot=False, gap=0.2):
+def create_three_circular_classes_outerimperfect(n=5000, noise_input=0.02, plot=False, gap=0.2, distance=1):
     """
     INPUT:
     n/2 is the target number of points in each circle (note that this is a target)
@@ -564,8 +564,8 @@ def create_three_circular_classes_outerimperfect(n=5000, noise_input=0.02, plot=
     Y_6=[]
     for i in range(len(X_3)):
         if np.abs(X_3[i])>gap:
-            X_6.append(X_3[i]*2.5)
-            Y_6.append(Y_3[i]*2.5)
+            X_6.append(distance*X_3[i]*2.5)
+            Y_6.append(distance*Y_3[i]*2.5)
             
     if plot:
         plt.plot(X_1,Y_1,'x',c='r')
@@ -583,7 +583,7 @@ def create_three_circular_classes_outerimperfect(n=5000, noise_input=0.02, plot=
 
 
 
-def create_four_circular_classes_outerimperfect(n=5000, noise_input=0.02, plot=False, gap=0.2):
+def create_four_circular_classes_outerimperfect(n=5000, noise_input=0.02, plot=False, gap=0.2, distance=1):
     """
     INPUT:
     n/2 is the target number of points in each circle (note that this is a target)
@@ -637,8 +637,8 @@ def create_four_circular_classes_outerimperfect(n=5000, noise_input=0.02, plot=F
     Y_8=[]
     for i in range(len(X_3)):
         if np.abs(X_3[i])>gap:
-            X_8.append(X_3[i]*3.9)
-            Y_8.append(Y_3[i]*3.9)
+            X_8.append(distance*X_3[i]*3.9)
+            Y_8.append(distance*Y_3[i]*3.9)
             
     if plot:
         plt.plot(X_1,Y_1,'x',c='r')
@@ -1155,3 +1155,7 @@ def six_moon(n = 1500, noise_input=.01, plot=False, matrix1=[[1,0],[0,1]],transl
         plt.show()
         
     return boundary, class1, class2, class3, class4, class5, class6
+
+####### TO FINISH: RAPH
+############# Disks with boundary classes as circles around the disks -> just one disk ###################
+########## Moons ##########
