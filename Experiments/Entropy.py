@@ -14,7 +14,7 @@ def entropy_vec(v):
 	return -su
 
 
-def total_uncertainty(x,n_iter=100, models):
+def total_uncertainty(x, models, n_iter=100):
 	"""
 	models is a list of objects of class classifiers
 	"""
@@ -25,16 +25,24 @@ def total_uncertainty(x,n_iter=100, models):
     # Step 2: entropy
 	return entropy_vec(s/len(models))
 
-# TO DO
-def expected_aleatoric_uncertainty(x,n_iter=100, models):
-#   trace_subset=take subset of trace
-#   m number of weights samples in trace)subset
-# 	s=0
-#	for weight in trace_subset:
-#			a=calculaer p(y|x^*,W)
-#			s+=entropy_vec(a)
+
+def expected_aleatoric_uncertainty(x, models, n_iter=100):
+	"""
+	models is a list of objects of class classifiers
+	"""
+    m=len(models)
+ 	s=0
+	for mod in models:
+		a=mod.predict_proba(x)
+		s+=entropy_vec(a)
 	return s/m
 
 
 def epistemic_uncertainty(x,n_iter=100, models):
+	"""
+	models is a list of objects of class classifiers
+
+	OUTPUT:
+	The Mutual information (MI) 
+	"""
 	return total_uncertainty(x,n_iter=100, models)-expected_aleatoric_uncertainty(x,n_iter=100, models)
