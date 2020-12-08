@@ -10,6 +10,7 @@ import autograd.numpy as np
 from pandas import get_dummies
 from Hamiltonian_MC import hmc
 import matplotlib.pyplot as plt
+from Toy_Datasets import plot_decision_boundary
 from Bayesian_pdf import get_log_prior, get_log_likelihood
 from sklearn.linear_model import LogisticRegression
 
@@ -351,17 +352,38 @@ def NLM_test():
     return samples
 
 
-if __name__ == '__main__':
-    samples = NLM_test()
+def boundaries_test():
+    params_1 = {'mean': [1, 1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params_2 = {'mean': [-1, -1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params_3 = {'mean': [-1, 1], 'covariance_matrix': 0.5 * np.eye(2)}
+    params = [params_1, params_2, params_3]
+    X, y = two_clusters_gaussian(params, 100)
+    activation_fn_type = 'relu'
+    activation_fn = lambda x: np.maximum(np.zeros(x.shape), x)
+    width = 5
+    hidden_layers = 2
+    input_dim = 2
+    output_dim = 3
+    architecture = {'width': width,
+                    'hidden_layers': hidden_layers,
+                    'input_dim': input_dim,
+                    'output_dim': output_dim,
+                    'activation_fn_type': 'relu',
+                    'activation_fn_params': 'rate=1',
+                    'activation_fn': activation_fn}
+    rand_state = 0
+    random = np.random.RandomState(rand_state)
+    params = {'step_size': 1e-3,
+              'max_iteration': 30000,
+              'random_restarts': 1}
+    nlm = NLM(architecture)
+    y = get_dummies(y).values
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=random)
+    models = nlm.sample_models(X_train.T, y_train.T, params, 50)
     fig, ax = plt.subplots(1, figsize=(20, 10))
-    burn_in = 0.2
-    thinning_factor = 3
-    print(samples['w'])
-    w = []
-    for i in range(len(samples['w'])):
-        w.append(samples['w'][i][1])
-    wp = w[int(burn_in * len(samples)):][::thinning_factor]
-    fig, ax = plt.subplots(1, 1, figsize=(20, 5))
-    ax.plot(range(len(wp)), wp)
+    plot_decision_boundary(X_train, y_train, models, ax)
     plt.show()
 
+
+if __name__ == '__main__':
+    boundaries_test()
