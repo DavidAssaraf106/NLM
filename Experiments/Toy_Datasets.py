@@ -82,6 +82,7 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
         linewidths = 0.5
 
     i = 0
+
     for model in models:
         yy = model.predict(xx)
         yy = np.array([np.argmax(y) for y in yy])

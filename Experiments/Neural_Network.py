@@ -1,7 +1,9 @@
 import autograd.numpy as np
+from pymc3 import Model
+import pymc3 as pm
+import theano
 from autograd import grad
 from autograd.misc.optimizers import adam
-import pymc3 as pm
 import theano.tensor as T
 import random
 from Bayesian_pdf import get_log_prior, get_log_likelihood
@@ -222,7 +224,7 @@ class NLM:
         return weights_concerned.flatten()
 
 
-    def pymc3_sampling(self, out_last_hidden_layer, output_dim, y, D, mu_wanted=0, tau_wanted=1, samples_wanted=1000,
+    def pymc3_sampling(self, out_last_hidden_layer, output_dim, y, D, mac, mu_wanted=0, tau_wanted=1, samples_wanted=1000,
                        number_chains=2):
         """
         :param out_last_hidden_layer: the feature map after the trained Neural network
@@ -236,8 +238,10 @@ class NLM:
         :return: samples from the posterior of the Bayesian Logistic regression
         """
         initialization_pymc3 = self.get_feature_map_weights()
+        if mac:
+            theano.config.gcc.cxxflags = "-Wno-c++11-narrowing"
         with pm.Model() as replacing_HMC:
-            w = pm.Normal('w', mu=initialization_pymc3, tau=tau_wanted, shape=(D * output_dim + output_dim))
+            w = pm.Normal('w', mu=0, tau=tau_wanted, shape=(D * output_dim + output_dim))
             linear_combinations = []
             for j in range(output_dim):
                 dot = pm.math.dot(out_last_hidden_layer[0].T, w[j * D:j * D + D]) + w[-output_dim+j]
@@ -245,11 +249,14 @@ class NLM:
                 linear_combinations.append(linear_combi)
             thetas = pm.Deterministic('theta', T.nnet.softmax(linear_combinations))
             y_obs = pm.Categorical('y_obs', p=thetas.T, observed=y)
-            trace = pm.sample(samples_wanted, chains=number_chains)
+            if mac:
+                trace = pm.sample(samples_wanted, chains=number_chains,cores=1,init='advi')
+            else:
+                trace = pm.sample(samples_wanted, chains=number_chains)
         return trace
 
 
-    def fit_NLM(self, x_train, y_train):
+    def fit_NLM(self, x_train, y_train, mac):
         """
         :param self: a Neural Network that has been fitted via MLE. Also, the params of the NN should contain a key
         'prior' and a key 'likelihood'
@@ -266,29 +273,30 @@ class NLM:
         :return: Samples from the posterior distribution sampled via the NUTS pymc3.
         """
         D = self.params['H']  # dimensionality of the feature map
-        samples = self.pymc3_sampling(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train, D)
+        samples = self.pymc3_sampling(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train, D, mac)
         return samples['w']
 
 
-    def sample_posterior(self, x_train, y_train, params_fit):
+    def sample_posterior(self, x_train, y_train, params_fit, mac):
         print('Currently fitting a Neural Network for the Classification task')
         self.fit_MLE(x_train, y_train, params_fit)
         print('NN trained ! Now, thanks to the feature map, we are going to sample the posterior weights')
-        samples = self.fit_NLM(x_train, y_train)
+        samples = self.fit_NLM(x_train, y_train, mac)
         print('Posterior samples sampled !')
         return samples
 
 
-    def sample_models(self, x_train, y_train, params_fit, num_models):
+    def sample_models(self, x_train, y_train, params_fit, num_models, mac):
+        import random
         posterior_weights = np.array(
-            self.sample_posterior(x_train, y_train, params_fit))  # size : (num_weights, num_samples)
+            self.sample_posterior(x_train, y_train, params_fit, mac))  # size : (num_weights, num_samples)
         print('Now, thanks to the posterior, we are going to create ' + str(
-            num_models) + 'different classification models')
-        indexes_chosen = random.choices(posterior_weights.shape[1], k=num_models)
-        selected_weights = posterior_weights[:, indexes_chosen]  # size : (num_weights, num_models)
+            num_models) + ' different classification models')
+        indexes_chosen = random.choices(range(posterior_weights.shape[0]), k=num_models)
+        selected_weights = posterior_weights[indexes_chosen,:]  # size : (num_weights, num_models)
         # one thing we need to solve about the weights is that this is not the right shape, we expect weights + biases and
         index_output_layer = - self.params['H'] * self.params['D_out'] - self.params['D_out']
-        weights_independent = self.weights[:index_output_layer]
+        weights_independent = self.weights[0][:index_output_layer]
         models = []
         for weight in selected_weights:
             complete_weight_model = np.array(
