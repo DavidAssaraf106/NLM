@@ -5,14 +5,14 @@ warnings.filterwarnings('ignore')
 from Neural_Network import NLM, Classifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from Toy_Datasets import two_clusters_gaussian, plot_decision_boundary
+from Toy_Datasets import two_clusters_gaussian, plot_decision_boundary, plot_uncertainty
 import autograd.numpy as np
 from pandas import get_dummies
 from Hamiltonian_MC import hmc
 import matplotlib.pyplot as plt
 from Bayesian_pdf import get_log_prior, get_log_likelihood
 from sklearn.linear_model import LogisticRegression
-from Entropy import epistemic_uncertainty
+from Entropy import epistemic_uncertainty, expected_aleatoric_uncertainty, total_uncertainty
 
 
 # import tensorflow as tf
@@ -348,7 +348,7 @@ def NLM_test():
     y = get_dummies(y).values
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=random)
     models = nlm.sample_models(X_train.T, y_train.T, params, num_models=100, mac=False)
-
+    return models, X_test, y_test
 
 
 
@@ -369,5 +369,12 @@ def traceplot_1():
 
 
 if __name__ == '__main__':
-    pass
+    models, X_test, y_test = NLM_test()
+    fig, axes = plt.subplots(1, 3, figsize=(20, 10))
+    plot_uncertainty(X_test, y_test, models, axes[0], epistemic_uncertainty)
+    plot_uncertainty(X_test, y_test, models, axes[1], total_uncertainty)
+    plot_uncertainty(X_test, y_test, models, axes[2], expected_aleatoric_uncertainty)
+    plt.show()
+
+
 

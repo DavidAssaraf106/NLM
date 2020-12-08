@@ -3,6 +3,7 @@ import autograd.numpy as np
 from sklearn import cluster, datasets
 # import matplotlib.pyplot as plt
 import warnings
+from Entropy import epistemic_uncertainty, total_uncertainty, expected_aleatoric_uncertainty
 from Toy_Datasets_2D import create_two_circular_classes, create_two_classes, create_three_classes, create_four_classes
 
 warnings.filterwarnings('ignore')
@@ -111,6 +112,47 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
     ax.set_ylabel('x_2')
     ax.legend(loc='best')
     return ax
+
+
+def plot_uncertainty(x, y, models, ax, func):
+    # Plot data
+    # from one-hot encode to array
+    if y.shape[1] > 1:
+        y = np.argmax(y, axis=1).flatten()
+    num_classes = np.max(y) + 1
+    for k in range(num_classes):
+        ax.scatter(x[y == k, 0], x[y == k, 1], alpha=0.2, label='class ' + str(k))
+    # Create mesh
+    xmin = np.min(x.flatten()) - 3
+    xmax = np.max(x.flatten()) + 3
+    interval = np.arange(xmin, xmax, 0.1)
+    n = np.size(interval)
+    x1, x2 = np.meshgrid(interval, interval)
+    x1 = x1.reshape(-1, 1)
+    x2 = x2.reshape(-1, 1)
+    xx = np.concatenate((x1, x2), axis=1)
+
+    alpha_line = 0.8
+    linewidths = 0.5
+
+
+    yy = np.array([func(x, models) for x in xx])  # we need a modular function
+    yy = yy.reshape((n, n))
+
+
+    # Plot decision surface
+    x1 = x1.reshape(n, n)
+    x2 = x2.reshape(n, n)
+    ax.contour(x1, x2, yy, colors='black', linewidths=linewidths, alpha=alpha_line)
+    ax.set_xlim((xmin, xmax))
+    ax.set_ylim((xmin, xmax))
+    ax.set_xlabel('x_1')
+    ax.set_ylabel('x_2')
+    ax.legend(loc='best')
+    return ax
+
+
+
 
 
 if __name__ == '__main__':
