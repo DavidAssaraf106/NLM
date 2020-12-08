@@ -288,8 +288,7 @@ class NLM:
 
     def sample_models(self, x_train, y_train, params_fit, num_models, mac):
         import random
-        posterior_weights = np.array(
-            self.sample_posterior(x_train, y_train, params_fit, mac))  # size : (num_weights, num_samples)
+        posterior_weights = np.array(self.sample_posterior(x_train, y_train, params_fit, mac))  # size : (num_weights, num_samples)
         print('Now, thanks to the posterior, we are going to create ' + str(
             num_models) + ' different classification models')
         indexes_chosen = random.choices(range(posterior_weights.shape[0]), k=num_models)
