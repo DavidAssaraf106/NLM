@@ -3,36 +3,47 @@ import matplotlib.pyplot as plt
 import warnings
 from statsmodels.graphics.tsaplots import plot_acf
 
+
 def entropy_vec(v):
 	D=len(v)
 	su=0
 	for i in range(D):
-		su+=np.log(v[i])*v[i]
+		if v[i]==0:
+			su+=0
+		else:
+			su+=np.log(v[i])*v[i]
 	return -su
 
 
-# TO DO
-def total_uncertainty(y,trace,x):
-#   trace_subset=take subset of trace
-#   m number of weights samples in trace)subset
-#   s=0
-#   for weights in trace_subset:
-#			s+=p(y|x^*,W)/m
-	return entropy_vec(s)
+def total_uncertainty(x, models, n_iter=100):
+	"""
+	models is a list of objects of class classifiers
+	"""
+	# Step 1: estimate the expectation
+   	s=0
+   	for mod in models:
+		s+=mod.predict_proba(x) # a vector in R^(output_dim)
+    # Step 2: entropy
+	return entropy_vec(s/len(models))
 
-# TO DO
-def expected_aleatoric_uncertainty(y,trace,x):
-#   trace_subset=take subset of trace
-#   m number of weights samples in trace)subset
-# 	s=0
-#	for weight in trace_subset:
-#			a=calculaer p(y|x^*,W)
-#			s+=entropy_vec(a)
+
+def expected_aleatoric_uncertainty(x, models, n_iter=100):
+	"""
+	models is a list of objects of class classifiers
+	"""
+	m=len(models)
+ 	s=0
+	for mod in models:
+		a=mod.predict_proba(x)
+		s+=entropy_vec(a)
 	return s/m
 
 
-def epistemic_uncertainty(y,trace,x):
-	return total_uncertainty(y,trace,x)-expected_aleatoric_uncertainty(y,trace,x)
+def epistemic_uncertainty(x, models, n_iter=100):
+	"""
+	models is a list of objects of class classifiers
 
-
-if __name__ == '__main__':
+	OUTPUT:
+	The Mutual information (MI) 
+	"""
+	return total_uncertainty(x, models,n_iter=100)-expected_aleatoric_uncertainty(x, models,n_iter=100)
