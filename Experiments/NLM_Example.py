@@ -12,6 +12,7 @@ from Hamiltonian_MC import hmc
 import matplotlib.pyplot as plt
 from Bayesian_pdf import get_log_prior, get_log_likelihood
 from sklearn.linear_model import LogisticRegression
+from Entropy import epistemic_uncertainty
 
 
 # import tensorflow as tf
@@ -341,17 +342,18 @@ def NLM_test():
     rand_state = 0
     random = np.random.RandomState(rand_state)
     params = {'step_size': 1e-3,
-              'max_iteration': 2000,
+              'max_iteration': 7500,
               'random_restarts': 1}
     nlm = NLM(architecture)
     y = get_dummies(y).values
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=random)
-    nlm.fit_MLE(X_train.T, y_train.T, params)
-    samples = nlm.fit_NLM(X_train.T, y_train.T)
-    return samples
+    models = nlm.sample_models(X_train.T, y_train.T, params, num_models=100, mac=False)
 
 
-if __name__ == '__main__':
+
+
+
+def traceplot_1():
     samples = NLM_test()
     fig, ax = plt.subplots(1, figsize=(20, 10))
     burn_in = 0.2
@@ -364,4 +366,8 @@ if __name__ == '__main__':
     fig, ax = plt.subplots(1, 1, figsize=(20, 5))
     ax.plot(range(len(wp)), wp)
     plt.show()
+
+
+if __name__ == '__main__':
+    pass
 

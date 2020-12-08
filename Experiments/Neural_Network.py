@@ -9,6 +9,7 @@ import random
 from Bayesian_pdf import get_log_prior, get_log_likelihood
 from Hamiltonian_MC import hmc
 
+mac = False
 
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))

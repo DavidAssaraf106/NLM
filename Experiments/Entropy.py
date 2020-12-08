@@ -33,3 +33,6 @@ def expected_aleatoric_uncertainty(y,trace,x):
 
 def epistemic_uncertainty(y,trace,x):
 	return total_uncertainty(y,trace,x)-expected_aleatoric_uncertainty(y,trace,x)
+
+
+if __name__ == '__main__':
