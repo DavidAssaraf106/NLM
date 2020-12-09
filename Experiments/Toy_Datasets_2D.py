@@ -62,6 +62,7 @@ def create_two_circular_classes(n=1500, noise_input=0.05, plot=False):
             Y_4.append(noisy_circles_4[0][i][1])
 
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1, Y_1, 'x', c='r')
         plt.plot(X_2, Y_2, 'x', c='b')
         plt.plot(X_3, Y_3, 'x', c='y')
@@ -140,6 +141,7 @@ def create_three_circular_classes(n=5000, noise_input=0.02, plot=False):
         Y_6.append(Y_3[i]*2.5)
             
     if plot:
+        plt.figure(figsize=(20,10))        
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_2,Y_2,'x',c='b')
         plt.plot(X_3,Y_3,'x',c='y')
@@ -233,6 +235,7 @@ def create_four_circular_classes(n=5000, noise_input=0.02, plot=False):
         Y_8.append(Y_3[i]*3.9)
             
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_2,Y_2,'x',c='b')
         plt.plot(X_3,Y_3,'x',c='y')
@@ -302,6 +305,7 @@ def create_two_circular_classes_outer(n=1500, noise_input=0.05, plot=False, dist
             Y_4.append(distance*noisy_circles_4[0][i][1])
 
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1, Y_1, 'x', c='r')
         plt.plot(X_3, Y_3, 'x', c='y')
         plt.plot(X_4, Y_4, 'x', c='b')
@@ -365,6 +369,7 @@ def create_three_circular_classes_outer(n=5000, noise_input=0.02, plot=False, di
         Y_6.append(distance*Y_3[i]*2.5)
             
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_3,Y_3,'x',c='y')
         plt.plot(X_5,Y_5,'x',c='g')
@@ -437,6 +442,7 @@ def create_four_circular_classes_outer(n=5000, noise_input=0.02, plot=False, dis
         Y_8.append(distance*Y_3[i]*3.9)
             
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_3,Y_3,'x',c='y')
         plt.plot(X_5,Y_5,'x',c='g')
@@ -504,6 +510,7 @@ def create_two_circular_classes_outerimperfect(n=1500, noise_input=0.05, plot=Fa
                 Y_4.append(distance*noisy_circles_4[0][i][1])
 
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1, Y_1, 'x', c='r')
         plt.plot(X_3, Y_3, 'x', c='y')
         plt.plot(X_4, Y_4, 'x', c='b')
@@ -568,6 +575,7 @@ def create_three_circular_classes_outerimperfect(n=5000, noise_input=0.02, plot=
             Y_6.append(distance*Y_3[i]*2.5)
             
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_3,Y_3,'x',c='y')
         plt.plot(X_5,Y_5,'x',c='g')
@@ -641,6 +649,7 @@ def create_four_circular_classes_outerimperfect(n=5000, noise_input=0.02, plot=F
             Y_8.append(distance*Y_3[i]*3.9)
             
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_3,Y_3,'x',c='y')
         plt.plot(X_5,Y_5,'x',c='g')
@@ -712,6 +721,7 @@ def create_two_classes(n=1500, noise_input=0.05, plot=False, factor_1=0.3, posit
    
             
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_2,Y_2,'x',c='b')
         plt.plot(X_3,Y_3,'x',c='y')
@@ -788,6 +798,7 @@ def create_three_classes(n=1500, noise_input=0.05, plot=False, factor_1=0.3, pos
    
             
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_2,Y_2,'x',c='b')
         plt.plot(X_3,Y_3,'x',c='y')
@@ -881,6 +892,7 @@ def create_four_classes(n=1500, noise_input=0.05, plot=False, factor_1=0.3, posi
    
             
     if plot:
+        plt.figure(figsize=(20,10))
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_2,Y_2,'x',c='b')
         plt.plot(X_3,Y_3,'x',c='y')
