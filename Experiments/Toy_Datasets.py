@@ -79,13 +79,12 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
         alpha_line = 0.1
         linewidths = 0.1
     else:
-        alpha_line = 0.8
-        linewidths = 0.5
+        alpha_line = 0.2
+        linewidths = 0.2
 
     i = 0
 
     for model in models:
-        print('a')
         yy = model.predict(xx)
         yy = np.array([np.argmax(y) for y in yy])
         yy = yy.reshape((n, n))
@@ -94,7 +93,7 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
         x1 = x1.reshape(n, n)
         x2 = x2.reshape(n, n)
         if shaded:
-            ax.contourf(x1, x2, yy, alpha=0.1 * 1. / (i + 1) ** 2, cmap='bwr')
+            ax.contourf(x1, x2, yy, alpha=0.1 * 1. / (i + 1) ** 2, cmap='inferno')
         ax.contour(x1, x2, yy, colors='black', linewidths=linewidths, alpha=alpha_line)
 
         i += 1
