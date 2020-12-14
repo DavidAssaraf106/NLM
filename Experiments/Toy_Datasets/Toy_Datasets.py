@@ -4,7 +4,7 @@ from sklearn import cluster, datasets
 # import matplotlib.pyplot as plt
 import warnings
 from Entropy import epistemic_uncertainty, total_uncertainty, expected_aleatoric_uncertainty
-from Toy_Datasets_2D import create_two_circular_classes, create_two_classes, create_three_classes, create_four_classes
+from Toy_Datasets.Toy_Datasets_2D import create_two_circular_classes, create_two_classes, create_three_classes, create_four_classes
 
 warnings.filterwarnings('ignore')
 
@@ -57,13 +57,14 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
        ax - the axis with the scatter plot
 
     '''
+    colors = ['b', 'r', 'g']
     # Plot data
     # from one-hot encode to array
     if y.shape[1] > 1:
         y = np.argmax(y, axis=1).flatten()
     num_classes = np.max(y) + 1
     for k in range(num_classes):
-        ax.scatter(x[y == k, 0], x[y == k, 1], alpha=0.2, label='class ' + str(k))
+        ax.scatter(x[y == k, 0], x[y == k, 1], alpha=0.2, label='class ' + str(k), c=colors[k])
 
     # Create mesh
     xmin = np.min(x.flatten()) - 3
@@ -83,13 +84,10 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
         linewidths = 0.2
 
     i = 0
-
     for model in models:
-        yy = model.predict(xx)
+        yy = model.predict(xx)  # test
         yy = np.array([np.argmax(y) for y in yy])
         yy = yy.reshape((n, n))
-        print(yy)
-        print(yy.shape)
 
         # Plot decision surface
         x1 = x1.reshape(n, n)
@@ -114,6 +112,7 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
     ax.set_ylabel('x_2')
     ax.legend(loc='best')
     return ax
+
 
 
 def plot_uncertainty(x, y, models, ax, func):
