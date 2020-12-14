@@ -6,6 +6,7 @@ from Neural_Network import NLM, Classifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from Toy_Datasets import two_clusters_gaussian, plot_decision_boundary, plot_uncertainty
+from Toy_Datasets_2D import create_two_circular_classes_outer
 import autograd.numpy as np
 from pandas import get_dummies
 from Hamiltonian_MC import hmc
@@ -348,9 +349,13 @@ def NLM_test():
     y = get_dummies(y).values
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=random)
     models = nlm.sample_models(X_train.T, y_train.T, params, num_models=100, mac=False)
+    models, X_test, y_test = NLM_test()
+    fig, axes = plt.subplots(1, 3, figsize=(20, 10))
+    plot_uncertainty(X_test, y_test, models, axes[0], epistemic_uncertainty)
+    plot_uncertainty(X_test, y_test, models, axes[1], total_uncertainty)
+    plot_uncertainty(X_test, y_test, models, axes[2], expected_aleatoric_uncertainty)
+    plt.show()
     return models, X_test, y_test
-
-
 
 
 def traceplot_1():
@@ -368,13 +373,54 @@ def traceplot_1():
     plt.show()
 
 
-if __name__ == '__main__':
-    models, X_test, y_test = NLM_test()
-    fig, axes = plt.subplots(1, 3, figsize=(20, 10))
-    plot_uncertainty(X_test, y_test, models, axes[0], epistemic_uncertainty)
-    plot_uncertainty(X_test, y_test, models, axes[1], total_uncertainty)
-    plot_uncertainty(X_test, y_test, models, axes[2], expected_aleatoric_uncertainty)
+def test_bacoun_1():
+    boundary, class1, class2 = create_two_circular_classes_outer(n=1000, noise_input=0.05, plot=True, distance=2)
+    X_try = np.hstack((boundary, class1, class2)).T
+    y_try = np.array([[k] * 500 for k in range(3)])
+    y_try = np.array(y_try).flatten()
+    ###relu activation
+    activation_fn_type = 'relu'
+    activation_fn = lambda x: np.maximum(np.zeros(x.shape), x)
+
+    ###neural network model design choices
+    width = 5
+    hidden_layers = 3
+    input_dim = 2
+    output_dim = 3
+
+    architecture = {'width': width,
+                    'hidden_layers': hidden_layers,
+                    'input_dim': input_dim,
+                    'output_dim': output_dim,
+                    'activation_fn_type': 'relu',
+                    'activation_fn_params': 'rate=1',
+                    'prior': 'normal',
+                    'prior_parameters': {'mean': np.zeros(5), 'covariance_matrix': np.eye(5)},
+                    'likelihood': 'logistic',
+                    'activation_fn': activation_fn}
+
+    # set random state to make the experiments replicable
+    rand_state = 0
+    random = np.random.RandomState(rand_state)
+
+    # instantiate a Feedforward neural network object
+    nlm2 = NLM(architecture, random=random)
+    y_try_ = get_dummies(y_try).values
+    X_train_try, X_test_try, y_train_try, y_test_try = train_test_split(X_try, y_try_, train_size=0.9,
+                                                                        random_state=random)
+    params = {'step_size': 1e-3,
+              'max_iteration': 5000,
+              'random_restarts': 1}
+
+    # fit my neural network to minimize MSE on the given data
+    # nlm.fit_MLE(x.T, y.reshape(1,-1), params)
+
+    nlm2.fit_MLE(X_train_try.T, y_train_try.T, params)
+    classifier = [Classifier(nlm2.weights, nlm2.forward)]
+    fig, ax = plt.subplots(1, figsize=(20, 10))
+    plot_decision_boundary(X_try, y_try_, classifier, ax, shaded=False)
     plt.show()
 
 
-
+if __name__ == '__main__':
+    test_bacoun_1()

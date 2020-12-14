@@ -89,6 +89,8 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
         yy = model.predict(xx)
         yy = np.array([np.argmax(y) for y in yy])
         yy = yy.reshape((n, n))
+        print(yy)
+        print(yy.shape)
 
         # Plot decision surface
         x1 = x1.reshape(n, n)
