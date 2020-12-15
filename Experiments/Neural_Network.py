@@ -307,7 +307,9 @@ class NLM:
         D = self.params['H']  # dimensionality of the feature map
         samples = self.pymc3_sampling_modif(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train,
                                       D, mac)
-        return np.concatenate((samples['w'], samples['intercept']), axis=1).flatten()   # modif david
+        print(samples['w'].shape)
+        print(samples['intercept'].shape)
+        return np.concatenate((samples['w'].reshape(samples['w'].shape[0], samples['w'].shape[1]*samples['w'].shape[2]), samples['intercept']), axis=1).flatten()   # modif david
 
     def sample_posterior(self, x_train, y_train, params_fit, mac):
         print('Currently fitting a Neural Network for the Classification task')
