@@ -55,16 +55,14 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
        shaded - whether or not the two sides of the decision boundary are shaded
     returns:
        ax - the axis with the scatter plot
-
     '''
-    colors = ['b', 'r', 'g', 'y']
     # Plot data
     # from one-hot encode to array
     if y.shape[1] > 1:
         y = np.argmax(y, axis=1).flatten()
     num_classes = np.max(y) + 1
     for k in range(num_classes):
-        ax.scatter(x[y == k, 0], x[y == k, 1], alpha=0.2, label='class ' + str(k), c=colors[k])
+        ax.scatter(x[y == k, 0], x[y == k, 1], alpha=0.2, label='class ' + str(k))
 
     # Create mesh
     xmin = np.min(x.flatten()) - 3
@@ -84,8 +82,9 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
         linewidths = 0.2
 
     i = 0
+
     for model in models:
-        yy = model.predict(xx)  # test
+        yy = model.predict(xx)
         yy = np.array([np.argmax(y) for y in yy])
         yy = yy.reshape((n, n))
 
@@ -112,7 +111,6 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
     ax.set_ylabel('x_2')
     ax.legend(loc='best')
     return ax
-
 
 import time
 
