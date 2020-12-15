@@ -375,14 +375,12 @@ class Classifier:
 
     def predict(self, x):
         p = self.forward(self.weights, x.T)
-        print('Probability', p)
         classes = []
         for i in range(p.shape[0]):
             classe = np.zeros(p.shape[1])
             biggest_probability = np.argmax(p[i]).flatten()
             classe[biggest_probability] = 1
             classes.append(classe)
-        print('Classes', classes)
         return np.array(classes)
 
     def predict_proba(self, x):
