@@ -223,6 +223,7 @@ class NLM:
         weights_concerned = self.weights.flatten()[index_output_layer:]
         return weights_concerned.flatten()
 
+
     def pymc3_sampling(self, out_last_hidden_layer, output_dim, y, D, mac, mu_wanted=0, tau_wanted=1,
                        samples_wanted=1500,
                        number_chains=2):
@@ -256,6 +257,37 @@ class NLM:
                 trace = pm.sample(samples_wanted, chains=number_chains, init='advi', cores=1)
         return trace
 
+    def pymc3_sampling_modif(self, out_last_hidden_layer, output_dim, y, D, mac, mu_wanted=0, tau_wanted=1,
+                       samples_wanted=1500,
+                       number_chains=2):
+        """
+        :param out_last_hidden_layer: the feature map after the trained Neural network
+        :param output_dim: the output dimension (= number of classes)
+        :param y: your training labels
+        :param D: the number of hidden nodes (is also the dimensionnality of the output of the feature map)
+        :param mu_wanted: mu of the normal prior
+        :param tau_wanted: precision of the normal prior
+        :param samples_wanted: number of samples generated
+        :param number_chains: number of chains ran
+        :return: samples from the posterior of the Bayesian Logistic regression
+        """
+        initialization_pymc3 = self.get_feature_map_weights()
+        weights_init = initialization_pymc3[:15].reshape(5, 3)
+        bias = initialization_pymc3[-3:]
+        if mac:
+            theano.config.gcc.cxxflags = "-Wno-c++11-narrowing"
+        with pm.Model() as replacing_HMC:
+            w = pm.Normal('w', mu=weights_init, tau=tau_wanted, shape=(D, output_dim))
+            intercept = pm.Normal('intercept', mu=bias, tau=1.0, shape=output_dim)
+            dot = pm.math.dot(out_last_hidden_layer[0].T,w) + intercept  # agreed and checked
+            thetas = pm.Deterministic('theta', T.nnet.softmax(dot))
+            y_obs = pm.Categorical('y_obs', p=thetas, observed=y)
+            #if mac:
+             #   trace = pm.sample(samples_wanted, chains=number_chains, cores=1, init='advi', tune=500)
+            #else:
+            trace = pm.sample(samples_wanted, chains=number_chains, init='advi', cores=1, tune=500)
+        return trace
+
     def fit_NLM(self, x_train, y_train, mac):
         """
         :param self: a Neural Network that has been fitted via MLE. Also, the params of the NN should contain a key
@@ -273,9 +305,9 @@ class NLM:
         :return: Samples from the posterior distribution sampled via the NUTS pymc3.
         """
         D = self.params['H']  # dimensionality of the feature map
-        samples = self.pymc3_sampling(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train,
+        samples = self.pymc3_sampling_modif(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train,
                                       D, mac)
-        return samples['w']
+        return np.concatenate((samples['w'], samples['intercept']), axis=1).flatten()   # modif david
 
     def sample_posterior(self, x_train, y_train, params_fit, mac):
         print('Currently fitting a Neural Network for the Classification task')
@@ -341,12 +373,14 @@ class Classifier:
 
     def predict(self, x):
         p = self.forward(self.weights, x.T)
+        print('Probability', p)
         classes = []
         for i in range(p.shape[0]):
             classe = np.zeros(p.shape[1])
             biggest_probability = np.argmax(p[i]).flatten()
             classe[biggest_probability] = 1
             classes.append(classe)
+        print('Classes', classes)
         return np.array(classes)
 
     def predict_proba(self, x):

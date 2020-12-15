@@ -170,6 +170,7 @@ def sample_NLM(max_iteration, n_samples):
     y = get_dummies(y).values
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=random)
     nlm = NLM(architecture)
+    print(y_train.shape)
     models = nlm.sample_models(X_train.T, y_train.T, params, 100, mac=False)
     accuracies = []
     for model in models:
@@ -216,9 +217,11 @@ def sample_NLM_Gael(max_iteration, n_samples):
     accuracies = []
     for model in models:
         y_pred_test = model.predict(X_test)
-        accuracy = np.mean(np.sum(y_pred_test == y_test, axis=1) == 3)
+        y_pred_labels = np.argmax(y_pred_test, axis=1).flatten()
+        y_test_labels = y = np.argmax(y_test, axis=1).flatten()
+        accuracy = accuracy_score(y_test_labels, y_pred_labels)
         accuracies.append(accuracy)
-    print(accuracies)
+        break
     print('The mean accuracy for all of the models is ', np.mean(accuracies))
     fig, ax = plt.subplots(1, figsize=(20, 10))
     plot_decision_boundary(X_train, y_train, models, ax)
@@ -313,5 +316,5 @@ def bacoun_1():
 
 
 if __name__ == '__main__':
-    sample_NLM_Gael(15000, 200)
+    sample_NLM(1000, 200)
 
