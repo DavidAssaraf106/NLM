@@ -281,11 +281,11 @@ class NLM:
             intercept = pm.Normal('intercept', mu=bias, tau=1.0, shape=output_dim)
             dot = pm.math.dot(out_last_hidden_layer[0].T,w) + intercept  # agreed and checked
             thetas = pm.Deterministic('theta', T.nnet.softmax(dot))
-            y_obs = pm.Categorical('y_obs', p=thetas.T, observed=y)
-            if mac:
-                trace = pm.sample(samples_wanted, chains=number_chains, cores=1, init='advi', tune=500)
-            else:
-                trace = pm.sample(samples_wanted, chains=number_chains, init='advi', cores=1, tune=500)
+            y_obs = pm.Categorical('y_obs', p=thetas, observed=y)
+            #if mac:
+             #   trace = pm.sample(samples_wanted, chains=number_chains, cores=1, init='advi', tune=500)
+            #else:
+            trace = pm.sample(samples_wanted, chains=number_chains, init='advi', cores=1, tune=500)
         return trace
 
     def fit_NLM(self, x_train, y_train, mac):
@@ -307,7 +307,7 @@ class NLM:
         D = self.params['H']  # dimensionality of the feature map
         samples = self.pymc3_sampling_modif(self.forward(self.weights, x_train, partial=True), self.params['D_out'], y_train,
                                       D, mac)
-        return samples['w']
+        return np.concatenate((samples['w'], samples['intercept']), axis=1).flatten()   # modif david
 
     def sample_posterior(self, x_train, y_train, params_fit, mac):
         print('Currently fitting a Neural Network for the Classification task')

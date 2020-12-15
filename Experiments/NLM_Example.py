@@ -170,6 +170,7 @@ def sample_NLM(max_iteration, n_samples):
     y = get_dummies(y).values
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=random)
     nlm = NLM(architecture)
+    print(y_train.shape)
     models = nlm.sample_models(X_train.T, y_train.T, params, 100, mac=False)
     accuracies = []
     for model in models:
@@ -315,5 +316,5 @@ def bacoun_1():
 
 
 if __name__ == '__main__':
-    sample_NLM(5000, 200)
+    sample_NLM(1000, 200)
 
