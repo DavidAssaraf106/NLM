@@ -912,7 +912,7 @@ def create_four_classes(n=1500, noise_input=0.05, plot=False, factor_1=0.3, posi
     return boundary, class1, class2, class3, class4
 
 
-########## Moons ##########
+########## Moons with boundary around each moon ##########
 
 from scipy.interpolate import lagrange
 import numpy as np
@@ -1168,6 +1168,85 @@ def six_moon(n = 1500, noise_input=.01, plot=False, matrix1=[[1,0],[0,1]],transl
         
     return boundary, class1, class2, class3, class4, class5, class6
 
+
+########## Moons with one boundary ##########
+
+def two_moon_circular_boundary(n = 1500, noise_input=.01, plot=False, distance=1, n_boundary=1500, noise_input_boundary=0.01):
+    """
+    INPUTS: 
+    n: the number of points in the two half-moons (n/2 for each half moon)
+    noise_input: allow to have more noisy half-moons (the boundary won't be more noisy)
+    plot: if set to True, will return the plot
+    
+    OUTPUTS:
+    a plot (if plot=True)
+    boundary class
+    class1
+    class2 
+    
+    """
+    
+    # create the half-moons using sklearn function
+    noisy_moons = datasets.make_moons(n_samples=n, noise=noise_input)
+    
+    
+    # get the two classes
+    X_1=[]
+    Y_1=[]
+    X_2=[]
+    Y_2=[]
+    for i in range(len(noisy_moons[0])):
+        if noisy_moons[1][i]==0:
+            X_1.append(noisy_moons[0][i][0])
+            Y_1.append(noisy_moons[0][i][1])
+        else:
+            X_2.append(noisy_moons[0][i][0])
+            Y_2.append(noisy_moons[0][i][1])
+            
+    #######################
+    # create the boundaries
+    #######################
+    noisy_circles_2 = datasets.make_circles(n_samples=n_boundary, factor=.3, noise=noise_input_boundary)
+    
+    X_3 = []
+    Y_3 = []
+    for i in range(len(noisy_circles_2[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_2[0][i][0]) ** 2 + noisy_circles_2[0][i][1] ** 2 < .7:
+            X_3.append(distance*10*(noisy_circles_2[0][i][0]+.02))
+            Y_3.append(distance*10*noisy_circles_2[0][i][1])
+    
+    #######################
+    # finished the boundaries
+    #######################
+
+    
+    # plot if necessary
+    # boundary class in blue
+    # classes in red and yellow
+    if plot==True:
+        f,ax=plt.subplots(1,1,figsize=(12,12))
+        ax.plot(X_1,Y_1,'x', c='r')
+        ax.plot(X_2,Y_2,'x', c='y')
+        ax.plot(X_3,Y_3,'x', c='b')
+        plt.show()
+        
+    # Outputs  
+    class1=[X_1,Y_1]
+    class2=[X_2,Y_2]
+    boundary=[X_3,Y_3]
+    
+    return boundary, class1, class2
+
+
+
+
+
+
 ####### TO FINISH: RAPH
 ############# Disks with boundary classes as circles around the disks -> just one disk ###################
-########## Moons ##########
+########## Moons -> just one boundary ##########
+
+
+
+
