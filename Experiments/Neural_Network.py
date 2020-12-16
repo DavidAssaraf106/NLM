@@ -313,7 +313,7 @@ class NLM:
 
     def sample_posterior(self, x_train, y_train, params_fit, mac):
         print('Currently fitting a Neural Network for the Classification task')
-        self.fit_MLE(x_train, y_train, params_fit)
+        self.fit_MLE(x_train, y_train, params_fit,reg_param=.01)
         print('NN trained ! Now, thanks to the feature map, we are going to sample the posterior weights')
         samples = self.fit_NLM(x_train, y_train, mac)
         print('Posterior samples sampled !')
