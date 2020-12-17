@@ -272,8 +272,8 @@ class NLM:
         :return: samples from the posterior of the Bayesian Logistic regression
         """
         initialization_pymc3 = self.get_feature_map_weights()
-        weights_init = initialization_pymc3[:15].reshape(5, 3)
-        bias = initialization_pymc3[-3:]
+        weights_init = initialization_pymc3[:D*output_dim].reshape(D, output_dim)
+        bias = initialization_pymc3[-output_dim:]
         if mac:
             theano.config.gcc.cxxflags = "-Wno-c++11-narrowing"
         with pm.Model() as replacing_HMC:
@@ -309,7 +309,7 @@ class NLM:
                                       D, mac)
         print(samples['w'].shape)
         print(samples['intercept'].shape)
-        return np.concatenate((samples['w'].reshape(samples['w'].shape[0], samples['w'].shape[1]*samples['w'].shape[2]), samples['intercept']), axis=1).flatten()   # modif david
+        return np.concatenate((samples['w'].reshape(samples['w'].shape[0], samples['w'].shape[1]*samples['w'].shape[2]), samples['intercept']), axis=1) 
 
     def sample_posterior(self, x_train, y_train, params_fit, mac):
         print('Currently fitting a Neural Network for the Classification task')
@@ -322,7 +322,11 @@ class NLM:
     def sample_models(self, x_train, y_train, params_fit, num_models, mac):
         posterior_weights = np.array(
             self.sample_posterior(x_train, y_train, params_fit, mac))  # size : (num_samples, num_weights)
-        posterior_weights = posterior_weights[int(posterior_weights.shape[0]/2):, :]
+        print(posterior_weights.shape)
+        try:            
+            posterior_weights = posterior_weights[int(posterior_weights.shape[0]/2):, :] #we want to take the last weights, because they are supposed to be of better quality.
+        except IndexError:
+            posterior_weights=posterior_weights[int(posterior_weights.shape[0]/2):]                
         print('Now, thanks to the posterior, we are going to create ' + str(
             num_models) + ' different classification models')
         indexes_chosen = random.choices(range(posterior_weights.shape[0]), k=num_models)
