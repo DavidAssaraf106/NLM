@@ -316,5 +316,5 @@ def bacoun_1():
 
 
 if __name__ == '__main__':
-    sample_NLM(1000, 200)
+    sample_NLM(5000, 200)
 

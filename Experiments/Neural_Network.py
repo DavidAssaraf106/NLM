@@ -258,7 +258,7 @@ class NLM:
         return trace
 
     def pymc3_sampling_modif(self, out_last_hidden_layer, output_dim, y, D, mac, mu_wanted=0, tau_wanted=1,
-                       samples_wanted=1500,
+                       samples_wanted=5000,
                        number_chains=2):
         """
         :param out_last_hidden_layer: the feature map after the trained Neural network
@@ -309,11 +309,11 @@ class NLM:
                                       D, mac)
         print(samples['w'].shape)
         print(samples['intercept'].shape)
-        return np.concatenate((samples['w'].reshape(samples['w'].shape[0], samples['w'].shape[1]*samples['w'].shape[2]), samples['intercept']), axis=1).flatten()   # modif david
+        return np.concatenate((samples['w'].reshape(samples['w'].shape[0], samples['w'].shape[1]*samples['w'].shape[2]), samples['intercept']), axis=1)  # modif david
 
     def sample_posterior(self, x_train, y_train, params_fit, mac):
         print('Currently fitting a Neural Network for the Classification task')
-        self.fit_MLE(x_train, y_train, params_fit)
+        self.fit_MLE(x_train, y_train, params_fit, reg_param=.01)
         print('NN trained ! Now, thanks to the feature map, we are going to sample the posterior weights')
         samples = self.fit_NLM(x_train, y_train, mac)
         print('Posterior samples sampled !')
@@ -375,14 +375,14 @@ class Classifier:
 
     def predict(self, x):
         p = self.forward(self.weights, x.T)
-        print('Probability', p)
+        # print('Probability', p)
         classes = []
         for i in range(p.shape[0]):
             classe = np.zeros(p.shape[1])
             biggest_probability = np.argmax(p[i]).flatten()
             classe[biggest_probability] = 1
             classes.append(classe)
-        print('Classes', classes)
+        # print('Classes', classes)
         return np.array(classes)
 
     def predict_proba(self, x):
