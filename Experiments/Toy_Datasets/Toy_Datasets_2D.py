@@ -1313,11 +1313,337 @@ def four_moon_circular_boundary(n = 1500, noise_input=.01, plot=False, matrix=[[
     return boundary, class1, class2, class3, class4
 
 
+def six_moon_circular_boundary(n = 1500, noise_input=.01, plot=False, matrix1=[[1,0],[0,1]],\
+                               translate1=[2,2], matrix2=[[-1,2],[0,1]], translate2=[-2,-2],\
+                              n_boundary=1500, noise_input_boundary=.01, distance=1):
+    """
+    INPUTS: 
+    n: the number of points in the six half-moons is 3*n (n/2 for each half moon)
+    noise_input: allow to have more noisy half-moons (the boundary won't be more noisy)
+    plot: if set to True, will return the plot
+    matrix: we have three copy of the same two half-moons: the second,third copies are linear transformation Ax+b
+    where A=matrix1 or matrix2, b=translate1 or translate2
+    
+    OUTPUTS:
+    a plot (if plot=True)
+    boundary class
+    class1
+    class2 
+    class3
+    class4
+    class5
+    class6
+    
+    """
+            
+    #######################
+    # create the boundaries
+    #######################
+    noisy_circles_2 = datasets.make_circles(n_samples=n_boundary, factor=.3, noise=noise_input_boundary)
+    
+    X_3 = []
+    Y_3 = []
+    for i in range(len(noisy_circles_2[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_2[0][i][0]) ** 2 + noisy_circles_2[0][i][1] ** 2 < .7:
+            X_3.append(distance*25*(noisy_circles_2[0][i][0]+.04))
+            Y_3.append(distance*25*(noisy_circles_2[0][i][1]+0.03))
+    
+    #######################
+    # finished the boundaries
+    #######################
+    
+    n_call=n
+    noise_call=noise_input
+    boundary_i,class1_i,class2_i=two_moon(n=n_call, noise_input= noise_call)
 
-####### TO FINISH: RAPH
-############# Disks with boundary classes as circles around the disks -> just one disk ###################
-########## Moons -> just one boundary ##########
+    
+    class3=[[],[]]
+    class4=[[],[]]
+    class5=[[],[]]
+    class6=[[],[]]
+    for i in range(len(class1_i[0])):
+        x1=class1_i[0][i]
+        y1=class1_i[1][i]
+        x2=class2_i[0][i]
+        y2=class2_i[1][i]
+        trans1=np.matmul(matrix1,[x1,y1])+translate1
+        trans2=np.matmul(matrix1,[x2,y2])+translate1
+        trans3=np.matmul(matrix2,[x1,y1])+translate2
+        trans4=np.matmul(matrix2,[x2,y2])+translate2
+        class3[0].append(trans1[0])
+        class3[1].append(trans1[1])
+        class4[0].append(trans2[0])
+        class4[1].append(trans2[1])
+        class5[0].append(trans3[0])
+        class5[1].append(trans3[1])
+        class6[0].append(trans4[0])
+        class6[1].append(trans4[1])
+    
+    boundary=[X_3,Y_3]
+    class1=class1_i
+    class2=class2_i
+    
+    # plot if necessary
+    # boundary class in blue
+    # classes in red and yellow
+    if plot==True:
+        f,ax=plt.subplots(1,1,figsize=(12,12))
+        ax.plot(boundary[0],boundary[1],'x',c='b')
+        ax.plot(class1[0],class1[1],'x',c='y')
+        ax.plot(class2[0],class2[1],'x',c='r')
+        ax.plot(class3[0],class3[1],'x',c='k')
+        ax.plot(class4[0],class4[1],'x',c='g')
+        ax.plot(class5[0],class5[1],'x',c='m')
+        ax.plot(class6[0],class6[1],'x',c='c')
+        plt.show()
+        
+    return boundary, class1, class2, class3, class4, class5, class6
 
 
 
 
+############# Disks with just one boundary class ###################
+
+
+def create_two_classes_circular_boundary(n=1500, noise_input=0.05, plot=False, factor_1=0.3, position=[1,1],\
+                                        n_boundary=1500, distance=1, noise_input_boundary=0.02):
+    """
+    INPUT:
+    n/2 is the target number of points in each circle (note that this is a target)
+    noise is the noise used in sklearn make_circles function
+    plot: if TRUE, will return a plot of the two classes of points (in red and yellow)
+    as well as the boundary class (in blue)
+    factor_1: allows us to vary the average distance between the boundary class and the original two classes
+    position: can specify the position of one cluster (the other one is a the origin)
+    
+    OUPUT: boundary, class1, class2
+    the two classes of points
+    the boundary class
+    
+    """
+    
+    #######################
+    # create the boundaries
+    #######################
+    noisy_circles_b = datasets.make_circles(n_samples=n_boundary, factor=.3, noise=noise_input_boundary)
+    
+    X_b = []
+    Y_b = []
+    for i in range(len(noisy_circles_b[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_b[0][i][0]) ** 2 + noisy_circles_b[0][i][1] ** 2 < .7:
+            X_b.append(distance*8*(noisy_circles_b[0][i][0]+.09))
+            Y_b.append(distance*8*(noisy_circles_b[0][i][1]+0.07))
+    
+    #######################
+    # finished the boundaries
+    #######################
+    
+    
+    
+    
+
+    # Generating the data using sklearn built-in function
+    noisy_circles_1 = datasets.make_circles(n_samples=n, factor=.0, noise=noise_input)
+    noisy_circles_2 = datasets.make_circles(n_samples=n, factor=factor_1, noise=noise_input)
+
+    
+    X_1=[]
+    Y_1=[]
+    for i in range(len(noisy_circles_1[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_1[0][i][0])**2+noisy_circles_1[0][i][1]**2<.7:
+            X_1.append(noisy_circles_1[0][i][0])
+            Y_1.append(noisy_circles_1[0][i][1])
+            
+
+    X_3=[]
+    Y_3=[]
+    for i in range(len(X_1)):
+        # make_circles creates two circles, we only want to create one
+        X_3.append(X_1[i]+position[0])
+        Y_3.append(Y_1[i]+position[1])
+   
+            
+    if plot:
+        plt.figure(figsize=(20,10))
+        plt.plot(X_1,Y_1,'x',c='r')
+        plt.plot(X_3,Y_3,'x',c='y')
+        plt.plot(X_b,Y_b,'x',c='b')
+        plt.show()
+        
+    boundary=[X_b,Y_b]
+    class1=[X_1,Y_1]
+    class2=[X_3,Y_3]
+    
+    return boundary, class1, class2
+
+
+def create_three_classes_circular_boundary(n=1500, noise_input=0.05, plot=False, factor_1=0.3, position=[[1,1],[-1,-1]],\
+                                          n_boundary=1500, distance=1, noise_input_boundary=0.02):
+    """
+    INPUT:
+    n/2 is the target number of points in each circle (note that this is a target)
+    noise is the noise used in sklearn make_circles function
+    plot: if TRUE, will return a plot of the two classes of points (in red, yellow, green)
+    as well as the boundary class (in blue)
+    position: can specify the position of two clusters (the other one is a the origin)
+    
+    OUPUT: boundary, class1, class2, class3
+    the three classes of points
+    the boundary class
+    
+    """
+    
+    #######################
+    # create the boundaries
+    #######################
+    noisy_circles_b = datasets.make_circles(n_samples=n_boundary, factor=.3, noise=noise_input_boundary)
+    
+    X_b = []
+    Y_b = []
+    for i in range(len(noisy_circles_b[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_b[0][i][0]) ** 2 + noisy_circles_b[0][i][1] ** 2 < .7:
+            X_b.append(distance*12*(noisy_circles_b[0][i][0]))
+            Y_b.append(distance*12*(noisy_circles_b[0][i][1]))
+    
+    #######################
+    # finished the boundaries
+    #######################
+    
+    
+    # Generating the data using sklearn built-in function
+    noisy_circles_1 = datasets.make_circles(n_samples=n, factor=.0, noise=noise_input)
+    noisy_circles_2 = datasets.make_circles(n_samples=n, factor=factor_1, noise=noise_input)
+
+    
+    X_1=[]
+    Y_1=[]
+    for i in range(len(noisy_circles_1[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_1[0][i][0])**2+noisy_circles_1[0][i][1]**2<.7:
+            X_1.append(noisy_circles_1[0][i][0])
+            Y_1.append(noisy_circles_1[0][i][1])
+            
+    X_3=[]
+    Y_3=[]
+    for i in range(len(X_1)):
+        # make_circles creates two circles, we only want to create one
+        X_3.append(X_1[i]+position[0][0])
+        Y_3.append(Y_1[i]+position[0][1])
+            
+        
+    X_5=[]
+    Y_5=[]
+    for i in range(len(X_1)):
+        # make_circles creates two circles, we only want to create one
+        X_5.append(X_1[i]+position[1][0])
+        Y_5.append(Y_1[i]+position[1][1])
+            
+   
+            
+    if plot:
+        plt.figure(figsize=(20,10))
+        plt.plot(X_1,Y_1,'x',c='r')
+        plt.plot(X_3,Y_3,'x',c='y')
+        plt.plot(X_5,Y_5,'x',c='g')
+        plt.plot(X_b,Y_b,'x',c='b')
+        plt.show()
+        
+    boundary=[X_b,Y_b]
+    class1=[X_1,Y_1]
+    class2=[X_3,Y_3]
+    class3=[X_5,Y_5]
+    
+    return boundary, class1, class2, class3
+
+
+def create_four_classes_circular_boundary(n=1500, noise_input=0.05, plot=False, factor_1=0.3, position=[[1,1],[-1,-1],[2,2]],\
+                       n_boundary=1500, distance=1, noise_input_boundary=0.02):
+    """
+    INPUT:
+    n/2 is the target number of points in each circle (note that this is a target)
+    noise is the noise used in sklearn make_circles function
+    plot: if TRUE, will return a plot of the two classes of points (in red, yellow, green, black)
+    as well as the boundary class (in blue)
+    position: can specify the position of three clusters (the other one is a the origin)
+    
+    OUPUT: boundary, class1, class2, class3, class4
+    the four classes of points
+    the boundary class
+    
+    """
+    
+    #######################
+    # create the boundaries
+    #######################
+    noisy_circles_b = datasets.make_circles(n_samples=n_boundary, factor=.3, noise=noise_input_boundary)
+    
+    X_b = []
+    Y_b = []
+    for i in range(len(noisy_circles_b[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_b[0][i][0]) ** 2 + noisy_circles_b[0][i][1] ** 2 < .7:
+            X_b.append(distance*12*(noisy_circles_b[0][i][0]+0.05))
+            Y_b.append(distance*12*(noisy_circles_b[0][i][1]))
+    
+    #########################
+    # finished the boundaries
+    #########################
+    
+    # Generating the data using sklearn built-in function
+    noisy_circles_1 = datasets.make_circles(n_samples=n, factor=.0, noise=noise_input)
+    noisy_circles_2 = datasets.make_circles(n_samples=n, factor=factor_1, noise=noise_input)
+
+    
+    X_1=[]
+    Y_1=[]
+    for i in range(len(noisy_circles_1[0])):
+        # make_circles creates two circles, we only want to create one
+        if (noisy_circles_1[0][i][0])**2+noisy_circles_1[0][i][1]**2<.7:
+            X_1.append(noisy_circles_1[0][i][0])
+            Y_1.append(noisy_circles_1[0][i][1])
+
+    X_3=[]
+    Y_3=[]
+    for i in range(len(X_1)):
+        # make_circles creates two circles, we only want to create one
+        X_3.append(X_1[i]+position[0][0])
+        Y_3.append(Y_1[i]+position[0][1])
+
+        
+    X_5=[]
+    Y_5=[]
+    for i in range(len(X_1)):
+        # make_circles creates two circles, we only want to create one
+        X_5.append(X_1[i]+position[1][0])
+        Y_5.append(Y_1[i]+position[1][1])
+
+        
+    X_7=[]
+    Y_7=[]
+    for i in range(len(X_1)):
+        # make_circles creates two circles, we only want to create one
+        X_7.append(X_1[i]+position[2][0])
+        Y_7.append(Y_1[i]+position[2][1])
+
+   
+            
+    if plot:
+        plt.figure(figsize=(20,10))
+        plt.plot(X_1,Y_1,'x',c='r')
+        plt.plot(X_3,Y_3,'x',c='y')
+        plt.plot(X_5,Y_5,'x',c='g')
+        plt.plot(X_7,Y_7,'x',c='k')
+        plt.plot(X_b,Y_b,'x',c='b')
+        plt.show()
+        
+    boundary=[X_b,Y_b]
+    class1=[X_1,Y_1]
+    class2=[X_3,Y_3]
+    class3=[X_5,Y_5]
+    class4=[X_7,Y_7]
+    
+    return boundary, class1, class2, class3, class4
