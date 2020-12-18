@@ -114,18 +114,17 @@ def plot_decision_boundary(x, y, models, ax, poly_degree=1, test_points=None, sh
 
 import time
 
-def plot_uncertainty(x, y_,y, models, ax, func):
+def plot_uncertainty(x, y, models, ax, func):
     # Plot data
     # from one-hot encode to array
-    t2=time.time()
     if y.shape[1] > 1:
         y = np.argmax(y, axis=1).flatten()
     num_classes = np.max(y) + 1
     for k in range(num_classes):
         ax.scatter(x[y == k, 0], x[y == k, 1], alpha=0.2, label='class ' + str(k))
     # Create mesh
-    xmin = np.min(x.flatten()) - 3
-    xmax = np.max(x.flatten()) + 3
+    xmin = np.min(x.flatten()) - 2
+    xmax = np.max(x.flatten()) + 2
     interval = np.arange(xmin, xmax, 0.1)
     n = np.size(interval)
     x1, x2 = np.meshgrid(interval, interval)
@@ -133,30 +132,34 @@ def plot_uncertainty(x, y_,y, models, ax, func):
     x2 = x2.reshape(-1, 1)
     xx = np.concatenate((x1, x2), axis=1)
 
-    alpha_line = 0.8
-    linewidths = 0.5
+    alpha_line = 0.2
+    linewidths = 0.1
+
+    
+    i = 0
+
+    for model in models:
+        yy = model.predict(xx)
+        yy = np.array([func(x, models) for x in xx])
+        yy = yy.reshape((n, n))
+
+        # Plot decision surface
+        x1 = x1.reshape(n, n)
+        x2 = x2.reshape(n, n)
+    
+        ax.contourf(x1, x2, yy, alpha=0.1 * 1. / (i + 1) ** 2, cmap='inferno')
+        ax.contour(x1, x2, yy, colors='black', linewidths=linewidths, alpha=alpha_line)
+
+        i += 1
 
 
-    yy = np.array([func(x, models) for x in xx])  # we need a modular function
-    yy = yy.reshape((n, n))
-    t3=time.time()
-    print(t3-t2)
-    print('********')
-
-
-    # Plot decision surface
-    x1 = x1.reshape(n, n)
-    x2 = x2.reshape(n, n)
-    t0=time.time()
-    ax.contour(x1, x2, yy, colors='black', linewidths=linewidths, alpha=alpha_line)
-    t1=time.time()
-    print(t1-t0)
     ax.set_xlim((xmin, xmax))
     ax.set_ylim((xmin, xmax))
     ax.set_xlabel('x_1')
     ax.set_ylabel('x_2')
     ax.legend(loc='best')
     return ax
+
 
 
 
