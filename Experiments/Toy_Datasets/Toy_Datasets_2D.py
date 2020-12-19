@@ -1433,7 +1433,7 @@ def create_two_classes_circular_boundary(n=1500, noise_input=0.05, plot=False, f
     for i in range(len(noisy_circles_b[0])):
         # make_circles creates two circles, we only want to create one
         if (noisy_circles_b[0][i][0]) ** 2 + noisy_circles_b[0][i][1] ** 2 < .7:
-            X_b.append(distance*8*(noisy_circles_b[0][i][0]+.09))
+            X_b.append(distance*8*(noisy_circles_b[0][i][0]+0.02))
             Y_b.append(distance*8*(noisy_circles_b[0][i][1]+0.07))
     
     #######################
@@ -1467,7 +1467,7 @@ def create_two_classes_circular_boundary(n=1500, noise_input=0.05, plot=False, f
    
             
     if plot:
-        plt.figure(figsize=(20,10))
+        plt.figure(figsize=(20,20))
         plt.plot(X_1,Y_1,'x',c='r')
         plt.plot(X_3,Y_3,'x',c='y')
         plt.plot(X_b,Y_b,'x',c='b')
