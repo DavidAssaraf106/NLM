@@ -59,4 +59,3 @@ def Geweke(traces):
         results_tests.append(list(ttest_ind(sample1[i], sample2[i])))
     results_tests_df = pd.DataFrame(np.array(results_tests).T, columns=['t-statistic', 'p-value'])
     return results_tests
-
